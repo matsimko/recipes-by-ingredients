@@ -57,5 +57,14 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="StoredProcedures" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\User.sql" />
+    <Build Include="Tables\Recipe.sql" />
+    <Build Include="Tables\Tag.sql" />
+    <Build Include="Tables\Ingredient.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipesWhichMatchIngredientsBest.sql" />
+    <Build Include="Tables\UsedIngredient.sql" />
   </ItemGroup>
 </Project>
