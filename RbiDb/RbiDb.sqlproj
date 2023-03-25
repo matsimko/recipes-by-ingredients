@@ -66,5 +66,6 @@
     <Build Include="Tables\Ingredient.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesWhichMatchIngredientsBest.sql" />
     <Build Include="Tables\UsedIngredient.sql" />
+    <Build Include="Tables\RecipeTag.sql" />
   </ItemGroup>
 </Project>
