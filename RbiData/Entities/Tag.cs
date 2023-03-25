@@ -8,7 +8,7 @@ namespace RbiData.Entities;
 
 public class Tag
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string? Name { get; set; }
 
 }

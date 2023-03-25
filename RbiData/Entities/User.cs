@@ -8,7 +8,7 @@ namespace RbiData.Entities;
 
 public class User
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     //If a user is anonymous, their public recipes won't display their username to others
     public string? IsAnonymous { get; set; }

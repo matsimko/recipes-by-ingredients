@@ -8,7 +8,7 @@ namespace RbiData.Entities;
 
 public class Ingredient
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string? Name { get; set; }
 
     //ingredients that don't exist in the global list can be created by users,

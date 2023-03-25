@@ -1,10 +1,11 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,18 +13,64 @@ using System.Transactions;
 
 namespace RbiData;
 
-internal class DbAccess
+/// <summary>
+/// This class is designed to allow a single transaction within a single connection.
+/// </summary>
+public class DbAccess : IDisposable, IDbAccess
 {
-    private readonly IConfiguration _config;
+    private IDbConnection? _connection;
+    private IDbTransaction? _transaction;
 
-    public DbAccess(IConfiguration config)
+    public DbAccess(string connectionString)
     {
-        _config = config;
+        _connection = new SqlConnection(connectionString);
     }
 
-    //Use a connection when you need to run a custom transaction
-    public IDbConnection NewConnection(string connectionId = "Default")
+    public IDbConnection Connection
     {
-        return new SqlConnection(_config.GetConnectionString(connectionId));
+        get
+        {
+            if (_connection == null)
+            {
+                throw new InvalidOperationException("This instance has already completed a transaction. Create a new one.");
+            }
+            return _connection;
+        }
+    }
+
+    public IDbTransaction Transaction
+    {
+        get
+        {
+            if (_transaction == null)
+            {
+                Connection.Open();
+                _transaction = Connection.BeginTransaction();
+            }
+            return _transaction;
+        }
+    }
+
+    public void Commit()
+    {
+        if (_transaction == null) throw new InvalidOperationException("Transaction hasn't started yet");
+        _transaction.Commit();
+        _transaction = null;
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        if (_transaction != null)
+        {
+            _transaction.Rollback();
+            _transaction.Dispose();
+            _transaction = null;
+        }
+        if (_connection != null)
+        {
+            _connection.Dispose();
+            _connection = null;
+        }
     }
 }
