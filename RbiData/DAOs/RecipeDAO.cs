@@ -38,96 +38,67 @@ public class RecipeDAO
         await _mt.Connection.DeleteAsync(recipe, _mt.Transaction);
     }
 
-    public Task<IEnumerable<RecipeWithIngredients>> GetRecipesForUser(User user)
+    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(User user)
     {
-        return _mt.Connection.QueryAsync<RecipeWithIngredients>(
+        return _mt.Connection.QueryAsync<RecipeWithTags>(
             "sp_GetRecipesForUser",
             new { UserId = user.Id },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<RecipeDetail> GetRecipe(long id)
+    public async Task<RecipeWithTags?> GetRecipe(long id)
     {
-        var recipe = await _mt.Connection.GetAsync<RecipeDetail>(id, _mt.Transaction);
-
-        recipe.Ingredients = await _mt.Connection.QueryAsync<Ingredient, UsedIngredient, UsedIngredient>(
-            "sp_GetIngredientsForRecipe",
-            (ingredient, usedIngredient) =>
+        RecipeWithTags? recipe = null;
+        var result = await _mt.Connection.QueryAsync<RecipeWithTags, User, Tag, RecipeWithTags>(
+            "sp_GetRecipe",
+            (r, u, t) =>
             {
-                usedIngredient.Ingredient = ingredient;
-                return usedIngredient;
+                if(recipe == null)
+                {
+                    recipe = r;
+                    recipe.User = u;
+                }
+                recipe.Tags.Add(t);
+                return recipe;
             },
-            new { RecipeId = id },
+            new { id },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure,
-            splitOn: "Amount");
-
-        recipe.Tags = await _mt.Connection.QueryAsync<Tag>(
-            "sp_GetTagsForRecipe",
-            new { RecipeId = id },
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
+            splitOn: "UserId, TagId");
 
         return recipe;
 
     }
 
-    // I might reimplement the GetRecipesWhichBestMatch SQL to prevent code duplication
-    // by generating dynamic SQL either here or in a stored procedure.
-
-    public Task<IEnumerable<RecipeWithIngredients>> GetRecipesWhichBestMatchIngredients(
-        IEnumerable<Ingredient> ingredients,
+    public async Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
+        IEnumerable<string> tagNames,
         User user,
         int offset = 0,
         int limit = DefaultRecipeLimit)
     {
-        return GetRecipesWhichBestMatch<RecipeWithIngredients, Ingredient>(ingredients, user, offset, limit);
-    }
-
-    public Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
-        IEnumerable<Tag> tags,
-        User user,
-        int offset = 0,
-        int limit = DefaultRecipeLimit)
-    {
-        return GetRecipesWhichBestMatch<RecipeWithTags, Tag>(tags, user, offset, limit);
-    }
-
-    //This overengineering to prevent duplication of two methods may obviously cost some performance
-    private async Task<IEnumerable<T>> GetRecipesWhichBestMatch<T, U>(
-        IEnumerable<U> entities,
-        User user,
-        int offset,
-        int limit) where T : Recipe
-    {
-        string entityName = typeof(U).Name;
-        var entitiesProp = typeof(T).GetProperty($"{entityName}s");
-        var getEntities = (T r) => (IEnumerable<U>)entitiesProp.GetValue(r);
-        var setEntities = (T r, IEnumerable<U> value) => entitiesProp.SetValue(r, value);
-
-        var recipes = await _mt.Connection.QueryAsync<T, U, T>(
-            $"sp_GetRecipesWhichBestMatch{entityName}s",
-            (recipe, entity) =>
+        var recipes = await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
+            "sp_GetRecipesWhichBestMatchTags",
+            (r, t) =>
             {
-                getEntities(recipe).Append(entity);
-                return recipe;
+                r.Tags.Add(t);
+                return r;
             },
-            new DynamicParameters(new Dictionary<string, object>
+            new
             {
-                {$"{entityName}IdList", String.Join(",", entities) },
-                {"UserId ", user.Id },
-                {"Offset", offset },
-                { "Limit", limit }
-            }),
+                TagNameList = String.Join(",", tagNames),
+                UserId = user.Id,
+                offset,
+                limit
+            },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure,
-            splitOn: $"{entityName}Id");
+            splitOn: "TagId");
 
         return recipes.GroupBy(r => r.Id).Select(g =>
         {
             var groupedRecipe = g.First();
-            setEntities(groupedRecipe, g.Select(r => getEntities(r).First()));
+            groupedRecipe.Tags = g.Select(r => r.Tags.First()).ToList();
             return groupedRecipe;
         });
     }

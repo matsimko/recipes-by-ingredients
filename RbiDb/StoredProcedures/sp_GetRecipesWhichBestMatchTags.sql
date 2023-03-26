@@ -1,23 +1,24 @@
 ﻿CREATE PROCEDURE [dbo].[sp_GetRecipesWhichBestMatchTags]
-	@tagIdList VARCHAR(MAX),
+	@tagNameList VARCHAR(MAX),
 	@userID INT,
+	@includePublicRecipes BIT = 1,
 	@offset INT = 0,
 	@maxRows INT = 100
 AS
 BEGIN
 	CREATE TABLE #TagsToMatch
 	(
-		Id INT
+		[Name] VARCHAR(100)
 	);
 	INSERT INTO #TagsToMatch
-	SELECT * FROM string_split(@tagIdList, ',');
+	SELECT * FROM string_split(@tagNameList, ',');
 
 	WITH BestRecipeMatches AS 
 	(
 		SELECT ui.RecipeId--, COUNT(*) AS MatchCount
 		FROM RecipeTag rt
-		JOIN #TagsToMatch ttm ON ttm.Id = rt.IngredientId
-		WHERE r.UserId IS NULL OR r.UserId = @userID
+		JOIN #TagsToMatch ttm ON ttm.Name = rt.TagId
+		WHERE r.UserId = @userID OR (@includePublicRecipes = 1 AND r.IsPublic = 1)
 		GROUP BY ttm.RecipeId
 		HAVING COUNT(*) > 0
 		ORDER BY COUNT(*)

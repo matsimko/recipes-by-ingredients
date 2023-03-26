@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RbiData.Entities;
 
 
-public abstract class Recipe
+public class Recipe
 {
     public long Id { get; set; }
     public string? Name { get; set; }

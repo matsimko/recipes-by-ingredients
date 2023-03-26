@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace RbiData.Entities;
 
-[Table("Recipe")]
 public class RecipeWithTags : Recipe
 {
-    public IEnumerable<Tag> Tags { get; set; }
+    public List<Tag> Tags { get; set; } = new List<Tag>();
 }

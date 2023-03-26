@@ -61,15 +61,12 @@
     <Build Include="Tables\User.sql" />
     <Build Include="Tables\Recipe.sql" />
     <Build Include="Tables\Tag.sql" />
-    <Build Include="Tables\Ingredient.sql" />
-    <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchIngredients.sql" />
-    <Build Include="Tables\UsedIngredient.sql" />
     <Build Include="Tables\RecipeTag.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesForUser.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchTags.sql" />
-    <Build Include="StoredProcedures\sp_GetIngredientsForRecipe.sql" />
-    <Build Include="StoredProcedures\sp_GetTagsForRecipe.sql" />
-    <Build Include="StoredProcedures\sp_GetIngredientsForUser.sql" />
+    <Build Include="StoredProcedures\sp_GetTagsForUser.sql" />
+    <Build Include="StoredProcedures\sp_AddTagToRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipe.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RbiDb.refactorlog" />

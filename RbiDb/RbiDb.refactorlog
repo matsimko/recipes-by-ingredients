@@ -7,4 +7,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[sp_GetRecipesWhichBestMatchIngredients]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1817c81c-fcf6-4232-ad11-2d1a82859b61" ChangeDateTime="03/26/2023 13:26:02">
+    <Property Name="ElementName" Value="[dbo].[sp_GetIngredientsForUser]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_GetTagsForUser]" />
+  </Operation>
 </Operations>

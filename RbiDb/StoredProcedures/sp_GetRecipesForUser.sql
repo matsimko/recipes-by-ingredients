@@ -2,9 +2,9 @@
 	@userId int
 AS
 BEGIN
-	SELECT r.Id, r.Name, i.Id AS IngredientId, i.Name
+	SELECT r.Id, r.Name, t.Id AS TagId, t.Name
 	FROM Recipe r
-	JOIN UsedIngredient ui ON ui.RecipeId = r.Id
-	JOIN Ingredient i ON i.Id = ui.IngredientId
+	JOIN RecipeTag rt ON rt.RecipeId = r.Id
+	JOIN Tag t ON t.Id = rt.TagId
 	WHERE r.UserId = @userId;
 END
