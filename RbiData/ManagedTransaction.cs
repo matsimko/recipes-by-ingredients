@@ -16,12 +16,12 @@ namespace RbiData;
 /// <summary>
 /// This class is designed to allow a single transaction within a single connection.
 /// </summary>
-public class DbAccess : IDisposable, IDbAccess
+public class ManagedTransaction : IDisposable, IManagedTransaction
 {
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;
 
-    public DbAccess(string connectionString)
+    public ManagedTransaction(string connectionString)
     {
         _connection = new SqlConnection(connectionString);
     }

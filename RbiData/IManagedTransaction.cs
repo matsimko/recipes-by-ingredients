@@ -1,7 +1,7 @@
 ﻿using System.Data;
 
 namespace RbiData;
-public interface IDbAccess
+public interface IManagedTransaction
 {
     IDbTransaction Transaction { get; }
     IDbConnection Connection { get; }
