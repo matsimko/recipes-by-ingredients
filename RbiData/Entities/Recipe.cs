@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace RbiData.Entities;
 
-public class Recipe
+
+public abstract class Recipe
 {
     public long Id { get; set; }
     public string? Name { get; set; }
     public bool IsPublic { get; set; }
     public User? User { get; set; }
-    public IEnumerable<UsedIngredient>? Ingredients { get; set; }
-    public IEnumerable<Tag>? Tags { get; set; }
     public string? Description { get; set; }
 }

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="adc1a131-cc3f-42a6-9387-b24da912f843" ChangeDateTime="03/25/2023 17:33:07">
+    <Property Name="ElementName" Value="[dbo].[sp_GetRecipesWhichMatchIngredientsBest]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_GetRecipesWhichBestMatchIngredients]" />
+  </Operation>
+</Operations>

@@ -9,8 +9,7 @@
     <ProjectGuid>{6e635690-657a-4ac5-9ced-30bf70e47de4}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>RbiDb</RootNamespace>
     <AssemblyName>RbiDb</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
@@ -48,7 +47,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -64,8 +62,16 @@
     <Build Include="Tables\Recipe.sql" />
     <Build Include="Tables\Tag.sql" />
     <Build Include="Tables\Ingredient.sql" />
-    <Build Include="StoredProcedures\sp_GetRecipesWhichMatchIngredientsBest.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchIngredients.sql" />
     <Build Include="Tables\UsedIngredient.sql" />
     <Build Include="Tables\RecipeTag.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipesForUser.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchTags.sql" />
+    <Build Include="StoredProcedures\sp_GetIngredientsForRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetTagsForRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetIngredientsForUser.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="RbiDb.refactorlog" />
   </ItemGroup>
 </Project>
