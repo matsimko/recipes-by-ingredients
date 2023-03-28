@@ -70,27 +70,32 @@ public class RecipeDAO
         await _mt.Connection.DeleteAsync(recipe, _mt.Transaction);
     }
 
-    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(User user)
-    {
-        return _mt.Connection.QueryAsync<RecipeWithTags>(
-            "sp_GetRecipesForUser",
-            new { UserId = user.Id },
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
-    }
-
     public async Task<RecipeWithTags?> GetRecipe(long id)
     {
         RecipeWithTags? recipe = null;
-        var result = await _mt.Connection.QueryAsync<RecipeWithTags, User, Tag, RecipeWithTags>(
+        //as there is only Tag and Ingredient in the hierarchy,
+        //I don't have to do a custom hierarchy parsing with a reader
+        var result = await _mt.Connection.QueryAsync<RecipeWithTags, User, Tag, IngredientInfo, RecipeWithTags>(
             "sp_GetRecipe",
-            (r, u, t) =>
+            (r, u, t, ii) =>
             {
-                if(recipe == null)
+                if (recipe == null)
                 {
                     recipe = r;
                     recipe.User = u;
                 }
+
+                if (ii.IsIngredient)
+                {
+                    t = new Ingredient
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Amount = ii.Amount,
+                        AmountUnit = ii.AmountUnit
+                    };
+                }
+
                 recipe.Tags.Add(t);
                 return recipe;
             },
@@ -100,38 +105,84 @@ public class RecipeDAO
             splitOn: "UserId, TagId");
 
         return recipe;
-
     }
 
-    public async Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
+    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(User user)
+    {
+        var parameters = new { UserId = user.Id };
+
+        return QueryRecipesWithTags("sp_GetRecipesForUser", parameters);
+    }
+
+    public Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
         IEnumerable<string> tagNames,
         User user,
         int offset = 0,
         int limit = DefaultRecipeLimit)
     {
-        var recipes = await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
-            "sp_GetRecipesWhichBestMatchTags",
+        var parameters = new
+        {
+            TagNameList = String.Join(",", tagNames),
+            UserId = user.Id,
+            offset,
+            limit
+        };
+
+        return QueryRecipesWithTags("sp_GetRecipesWhichBestMatchTags", parameters);
+    }
+
+    private async Task<IEnumerable<RecipeWithTags>> QueryRecipesWithTags(
+        string sql,
+        object parameters,
+        CommandType commandType = CommandType.StoredProcedure)
+    {
+        //this implementation should be faster than the one below,
+        //but for limited number of records it is irrelevant
+        List<RecipeWithTags> recipes = new();
+        RecipeWithTags? currentRecipe = null;
+        await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
+            sql,
             (r, t) =>
             {
-                r.Tags.Add(t);
-                return r;
+                if (r.Id != currentRecipe?.Id)
+                {
+                    currentRecipe = r;
+                    recipes.Add(currentRecipe);
+                }
+                currentRecipe.Tags.Add(t);
+                return currentRecipe;
             },
-            new
-            {
-                TagNameList = String.Join(",", tagNames),
-                UserId = user.Id,
-                offset,
-                limit
-            },
+            parameters,
             _mt.Transaction,
-            commandType: CommandType.StoredProcedure,
+            commandType: commandType,
             splitOn: "TagId");
 
-        return recipes.GroupBy(r => r.Id).Select(g =>
-        {
-            var groupedRecipe = g.First();
-            groupedRecipe.Tags = g.Select(r => r.Tags.First()).ToList();
-            return groupedRecipe;
-        });
+        return recipes;
+
+        //var recipes = await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
+        //    sql,
+        //    (r, t) =>
+        //    {
+        //        r.Tags.Add(t);
+        //        return r;
+        //    },
+        //    parameters,
+        //    _mt.Transaction,
+        //    commandType: commandType,
+        //    splitOn: "TagId");
+
+        //return recipes.GroupBy(r => r.Id).Select(g =>
+        //{
+        //    var groupedRecipe = g.First();
+        //    groupedRecipe.Tags = g.Select(r => r.Tags.First()).ToList();
+        //    return groupedRecipe;
+        //});
     }
+}
+
+internal class IngredientInfo
+{
+    public bool IsIngredient { get; set; }
+    public float? Amount { get; set; }
+    public string? AmountUnit { get; set; }
 }
