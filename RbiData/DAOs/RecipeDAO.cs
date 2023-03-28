@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Dapper.Contrib.Extensions;
 using RbiData.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,15 +20,25 @@ public class RecipeDAO
 
     public async Task Insert(Recipe recipe)
     {
-        await _mt.Connection.InsertAsync(recipe, _mt.Transaction);
+        await _mt.Connection.ExecuteAsync(
+            "sp_InsertRecipe",
+            new
+            {
+                recipe.Name,
+                recipe.Description,
+                recipe.IsPublic,
+                UserId = recipe.User.Id
+            },
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure);
     }
 
-    public async Task AddTagToRecipe(Tag tag, Recipe recipe)
+    public async Task AddTagToRecipe(Tag tag, long recipeId)
     {
         var parameters = new DynamicParameters(new
         {
             Name = tag.Name,
-            RecipeId = recipe.Id,
+            recipeId
         });
         if (tag is Ingredient ingredient)
         {
@@ -46,14 +55,14 @@ public class RecipeDAO
 
     }
 
-    public async Task RemoveTagFromRecipe(Tag tag, Recipe recipe)
+    public async Task RemoveTagFromRecipe(Tag tag, long recipeId)
     {
         await _mt.Connection.ExecuteAsync(
             "sp_RemoveTagFromRecipe",
             new
             {
                 TagId = tag.Id,
-                RecipeId = recipe.Id,
+                recipeId,
             },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure);
@@ -61,20 +70,51 @@ public class RecipeDAO
 
     public async Task Update(Recipe recipe)
     {
-        await _mt.Connection.UpdateAsync(recipe, _mt.Transaction);
+        await _mt.Connection.ExecuteAsync(
+           "sp_UpdateRecipe",
+           new
+           {
+               recipe.Id,
+               recipe.Name,
+               recipe.Description,
+               recipe.IsPublic,
+           },
+           _mt.Transaction,
+           commandType: CommandType.StoredProcedure);
     }
 
-    public async Task Delete(Recipe recipe)
+    public async Task Delete(long id)
     {
-        await _mt.Connection.DeleteAsync(recipe, _mt.Transaction);
+        await _mt.Connection.ExecuteAsync(
+            "sp_DeleteRecipe",
+            new { id },
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<RecipeWithTags?> GetRecipe(long id)
+    public async Task<Recipe?> GetRecipe(long id)
+    {
+        var result = await _mt.Connection.QueryAsync<Recipe, User?, Recipe>(
+            "sp_GetRecipe",
+            (r, u) =>
+            {
+                r.User = u;
+                return r;
+            },
+            new { id },
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure,
+            splitOn: "UserId");
+            
+        return result.FirstOrDefault();
+    }
+
+    public async Task<RecipeWithTags?> GetRecipeDetail(long id)
     {
         RecipeWithTags? recipe = null;
         //as there is only Tag and Ingredient in the hierarchy,
         //I don't have to do a custom hierarchy parsing with a reader
-        var result = await _mt.Connection.QueryAsync<RecipeWithTags, User, Tag, IngredientInfo, RecipeWithTags>(
+        var result = await _mt.Connection.QueryAsync<RecipeWithTags, User?, Tag, IngredientInfo, RecipeWithTags>(
             "sp_GetRecipe",
             (r, u, t, ii) =>
             {
@@ -106,23 +146,23 @@ public class RecipeDAO
         return recipe;
     }
 
-    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(User user)
+    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(long userId)
     {
-        var parameters = new { UserId = user.Id };
+        var parameters = new { userId };
 
         return QueryRecipesWithTags("sp_GetRecipesForUser", parameters);
     }
 
     public Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
         IEnumerable<string> tagNames,
-        User user,
+        long userId,
         int offset,
         int limit)
     {
         var parameters = new
         {
             TagNameList = String.Join(",", tagNames),
-            UserId = user.Id,
+            userId,
             offset,
             limit
         };
@@ -139,13 +179,14 @@ public class RecipeDAO
         //but for limited number of records it is irrelevant
         List<RecipeWithTags> recipes = new();
         RecipeWithTags? currentRecipe = null;
-        await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
+        await _mt.Connection.QueryAsync<RecipeWithTags, User?, Tag, RecipeWithTags>(
             sql,
-            (r, t) =>
+            (r, u, t) =>
             {
                 if (r.Id != currentRecipe?.Id)
                 {
                     currentRecipe = r;
+                    currentRecipe.User = u;
                     recipes.Add(currentRecipe);
                 }
                 currentRecipe.Tags.Add(t);
@@ -154,7 +195,7 @@ public class RecipeDAO
             parameters,
             _mt.Transaction,
             commandType: commandType,
-            splitOn: "TagId");
+            splitOn: "UserId, TagId");
 
         return recipes;
 

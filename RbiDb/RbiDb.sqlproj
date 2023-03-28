@@ -65,8 +65,12 @@
     <Build Include="StoredProcedures\sp_GetRecipesForUser.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchTags.sql" />
     <Build Include="StoredProcedures\sp_AddTagToRecipe.sql" />
-    <Build Include="StoredProcedures\sp_GetRecipe.sql" />
     <Build Include="StoredProcedures\sp_RemoveTagFromRecipe.sql" />
+    <Build Include="StoredProcedures\sp_InsertRecipe.sql" />
+    <Build Include="StoredProcedures\sp_DeleteRecipe.sql" />
+    <Build Include="StoredProcedures\sp_UpdatetRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetRecipeDetail.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RbiDb.refactorlog" />

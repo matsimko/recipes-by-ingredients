@@ -7,5 +7,4 @@ public interface IManagedTransaction : IDisposable
     IDbConnection Connection { get; }
 
     void Commit();
-    void Dispose();
 }

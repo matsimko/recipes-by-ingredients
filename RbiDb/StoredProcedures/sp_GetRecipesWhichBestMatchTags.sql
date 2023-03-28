@@ -15,8 +15,9 @@ BEGIN
 
 	WITH BestRecipeMatches AS 
 	(
-		SELECT ui.RecipeId--, COUNT(*) AS MatchCount
-		FROM RecipeTag rt
+		SELECT r.Id
+		FROM Recipe r
+		JOIN RecipeTag rt ON rt.RecipeId = r.Id
 		JOIN Tag t ON t.Id = rt.TagId
 		JOIN #TagsToMatch ttm ON t.Name IN (ttm.Name, ttm.Name + 's'. ttm.Name + 'es')
 		WHERE r.UserId = @userID OR (@includePublicRecipes = 1 AND r.IsPublic = 1)
@@ -25,10 +26,13 @@ BEGIN
 		ORDER BY COUNT(*)
 		OFFSET @Offset ROWS FETCH NEXT @maxRows ROWS ONLY
 	)
-	SELECT r.Id, r.Name, t.Id AS TagId, t.Name
+	SELECT r.Id, r.Name,
+		r.UserId, u.Username, u.IsAnonymous,
+		t.Id AS TagId, t.Name
 	FROM Recipe r
-	JOIN BestRecipeMatches brm ON r.Id = brm.RecipeId
+	JOIN BestRecipeMatches brm ON r.Id = brm.Id
 	JOIN RecipeTag rt ON rt.RecipeId = r.Id
 	JOIN Tag t ON t.Id = rt.TagId
+	JOIN [User] u ON u.Id = r.UserId
 
 END
