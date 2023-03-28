@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace RbiData.DAOs;
 
-//A query for recipes can be made based on ingredients, or tags, but
-//not both because a recipe with N ingredients and M tags
-//would require N * M rows if it were to be retrieved in a single query
 public class RecipeDAO
 {
     private const int DefaultRecipeLimit = 100;
@@ -26,6 +23,41 @@ public class RecipeDAO
     public async Task Insert(Recipe recipe)
     {
         await _mt.Connection.InsertAsync(recipe, _mt.Transaction);
+    }
+
+    public async Task AddTagToRecipe(Tag tag, Recipe recipe)
+    {
+        var parameters = new DynamicParameters(new
+        {
+            Name = tag.Name,
+            RecipeId = recipe.Id,
+        });
+        if (tag is Ingredient ingredient)
+        {
+            parameters.Add("IsIngredient", true);
+            parameters.Add("Amount", ingredient.Amount);
+            parameters.Add("AmountUnit", ingredient.AmountUnit);
+        }
+
+        await _mt.Connection.ExecuteAsync(
+            "sp_AddTagToRecipe",
+            parameters,
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure);
+
+    }
+
+    public async Task RemoveTagFromRecipe(Tag tag, Recipe recipe)
+    {
+        await _mt.Connection.ExecuteAsync(
+            "sp_RemoveTagFromRecipe",
+            new
+            {
+                TagId = tag.Id,
+                RecipeId = recipe.Id,
+            },
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure);
     }
 
     public async Task Update(Recipe recipe)

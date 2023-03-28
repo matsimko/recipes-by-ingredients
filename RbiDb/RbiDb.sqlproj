@@ -64,11 +64,14 @@
     <Build Include="Tables\RecipeTag.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesForUser.sql" />
     <Build Include="StoredProcedures\sp_GetRecipesWhichBestMatchTags.sql" />
-    <Build Include="StoredProcedures\sp_GetTagsForUser.sql" />
     <Build Include="StoredProcedures\sp_AddTagToRecipe.sql" />
     <Build Include="StoredProcedures\sp_GetRecipe.sql" />
+    <Build Include="StoredProcedures\sp_RemoveTagFromRecipe.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RbiDb.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>

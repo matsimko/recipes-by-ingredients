@@ -17,7 +17,8 @@ BEGIN
 	(
 		SELECT ui.RecipeId--, COUNT(*) AS MatchCount
 		FROM RecipeTag rt
-		JOIN #TagsToMatch ttm ON ttm.Name = rt.TagId
+		JOIN Tag t ON t.Id = rt.TagId
+		JOIN #TagsToMatch ttm ON t.Name IN (ttm.Name, ttm.Name + 's'. ttm.Name + 'es')
 		WHERE r.UserId = @userID OR (@includePublicRecipes = 1 AND r.IsPublic = 1)
 		GROUP BY ttm.RecipeId
 		HAVING COUNT(*) > 0

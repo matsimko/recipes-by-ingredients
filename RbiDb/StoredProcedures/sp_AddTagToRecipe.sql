@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[sp_AddTagToRecipe]
 	@name VARCHAR(100),
 	@recipeId INT,
-	@userId INT,
 	@isIngredient BIT = 0,
 	@amount DECIMAL(8,2) = NULL,
 	@amountUnit VARCHAR(10) = NULL 
@@ -11,20 +10,20 @@ BEGIN
 
 	SELECT @tagId = Id
 	FROM Tag 
-	WHERE Name = @name AND (UserId IS NULL OR UserId = @userId);
+	WHERE Name = @name;
 
 	IF @tagId IS NULL
 	BEGIN
 		DECLARE @InsertedId TABLE (Id INT);
 
-		INSERT INTO Tag (Name, IsIngredient, UserId)
+		INSERT INTO Tag (Name)
 		OUTPUT inserted.Id INTO @InsertedId
-		VALUES (@name, @isIngredient, @userId);
+		VALUES (@name);
 
 		SELECT @tagId = Id FROM @InsertedId;
 	END
 
-	INSERT INTO RecipeTag (RecipeId, TagId, Amount, AmountUnit)
-	VALUES (@recipeId, @tagId, @amount, @amountUnit);
+	INSERT INTO RecipeTag (RecipeId, TagId, IsIngredient, Amount, AmountUnit)
+	VALUES (@recipeId, @tagId, @isIngredient, @amount, @amountUnit);
 
 END
