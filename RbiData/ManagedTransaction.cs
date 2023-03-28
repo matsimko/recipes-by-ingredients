@@ -16,7 +16,7 @@ namespace RbiData;
 /// <summary>
 /// This class is designed to allow a single transaction within a single connection.
 /// </summary>
-public class ManagedTransaction : IDisposable, IManagedTransaction
+public class ManagedTransaction : IManagedTransaction
 {
     private IDbConnection? _connection;
     private IDbTransaction? _transaction;

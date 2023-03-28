@@ -12,7 +12,6 @@ namespace RbiData.DAOs;
 
 public class RecipeDAO
 {
-    private const int DefaultRecipeLimit = 100;
     private readonly IManagedTransaction _mt;
 
     public RecipeDAO(IManagedTransaction mt)
@@ -117,8 +116,8 @@ public class RecipeDAO
     public Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
         IEnumerable<string> tagNames,
         User user,
-        int offset = 0,
-        int limit = DefaultRecipeLimit)
+        int offset,
+        int limit)
     {
         var parameters = new
         {
