@@ -14,10 +14,12 @@ public class RecipeService : IRecipeService
 {
     private const int DefaultRecipeLimit = 100;
     private readonly IManagedTransactionFactory _transactionFactory;
+    private readonly IDaoFactory<RecipeDao> _recipeDaoFactory;
 
-    public RecipeService(IManagedTransactionFactory transactionFactory)
+    public RecipeService(IManagedTransactionFactory transactionFactory, IDaoFactory<RecipeDao> recipeDaoFactory)
     {
         _transactionFactory = transactionFactory;
+        _recipeDaoFactory = recipeDaoFactory;
     }
 
     public async Task Insert(Recipe recipe, long userId)
@@ -25,52 +27,52 @@ public class RecipeService : IRecipeService
         recipe.User = new User { Id = userId };
 
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        await recipeDAO.Insert(recipe);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        await recipeDao.Insert(recipe);
         transaction.Commit();
     }
 
     public async Task AddTagToRecipe(Tag tag, long recipeId, long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        await ValidateExistenceAndOwnershipAsync(recipeDAO, recipeId, userId);
-        await recipeDAO.AddTagToRecipe(tag, recipeId);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        await ValidateExistenceAndOwnershipAsync(recipeDao, recipeId, userId);
+        await recipeDao.AddTagToRecipe(tag, recipeId);
         transaction.Commit();
     }
 
     public async Task RemoveTagFromRecipe(Tag tag, long recipeId, long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        await ValidateExistenceAndOwnershipAsync(recipeDAO, recipeId, userId);
-        await recipeDAO.RemoveTagFromRecipe(tag, recipeId);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        await ValidateExistenceAndOwnershipAsync(recipeDao, recipeId, userId);
+        await recipeDao.RemoveTagFromRecipe(tag, recipeId);
         transaction.Commit();
     }
 
     public async Task Update(Recipe recipe, long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        await ValidateExistenceAndOwnershipAsync(recipeDAO, recipe.Id, userId);
-        await recipeDAO.Update(recipe);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        await ValidateExistenceAndOwnershipAsync(recipeDao, recipe.Id, userId);
+        await recipeDao.Update(recipe);
         transaction.Commit();
     }
 
     public async Task Delete(long id, long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        await ValidateExistenceAndOwnershipAsync(recipeDAO, id, userId);
-        await recipeDAO.Delete(id);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        await ValidateExistenceAndOwnershipAsync(recipeDao, id, userId);
+        await recipeDao.Delete(id);
         transaction.Commit();
     }
 
     public async Task<RecipeWithTags> GetRecipeDetail(long id, long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        var recipe = await recipeDAO.GetRecipeDetail(id);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        var recipe = await recipeDao.GetRecipeDetail(id);
         transaction.Commit();
         ValidateExistenceAndOwnership(recipe, userId);
         return recipe;
@@ -79,8 +81,8 @@ public class RecipeService : IRecipeService
     public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(long userId)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        var recipes = recipeDAO.GetRecipesForUser(userId);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        var recipes = recipeDao.GetRecipesForUser(userId);
         transaction.Commit();
         return recipes;
     }
@@ -92,15 +94,15 @@ public class RecipeService : IRecipeService
         int limit = DefaultRecipeLimit)
     {
         using var transaction = _transactionFactory.Create();
-        var recipeDAO = new RecipeDAO(transaction);
-        var recipes = recipeDAO.GetRecipesWhichBestMatchTags(tagNames, userId, offset, limit);
+        var recipeDao = _recipeDaoFactory.Create(transaction);
+        var recipes = recipeDao.GetRecipesWhichBestMatchTags(tagNames, userId, offset, limit);
         transaction.Commit();
         return recipes;
     }
 
-    private static async Task ValidateExistenceAndOwnershipAsync(RecipeDAO recipeDAO, long recipeId, long? userId)
+    private static async Task ValidateExistenceAndOwnershipAsync(RecipeDao recipeDao, long recipeId, long? userId)
     {
-        var recipe = await recipeDAO.GetRecipe(recipeId);
+        var recipe = await recipeDao.GetRecipe(recipeId);
         ValidateExistenceAndOwnership(recipe, userId);
     }
 

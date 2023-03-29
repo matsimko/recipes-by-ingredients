@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace RbiData.DAOs;
 
-public class RecipeDAO
+public class RecipeDao
 {
     private readonly IManagedTransaction _mt;
 
-    public RecipeDAO(IManagedTransaction mt)
+    public RecipeDao(IManagedTransaction mt)
     {
         _mt = mt;
     }

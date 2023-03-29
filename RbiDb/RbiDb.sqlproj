@@ -76,6 +76,6 @@
     <RefactorLog Include="RbiDb.refactorlog" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Script.PostDeployment1.sql" />
+    <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>

@@ -12,5 +12,5 @@ Post-Deployment Script Template
 
 IF NOT EXISTS (SELECT * FROM [User] WHERE Id = 1)
 BEGIN
-    INSERT INTO [User] (Id) VALUES (1);
+    INSERT INTO [User] (Id, Username) VALUES (1, 'TestUser');
 END
