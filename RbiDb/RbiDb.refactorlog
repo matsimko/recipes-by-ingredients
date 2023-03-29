@@ -14,4 +14,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[sp_GetTagsForUser]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6f57b7f7-3107-44c6-94bb-6b2a0b639820" ChangeDateTime="03/29/2023 14:54:43">
+    <Property Name="ElementName" Value="[dbo].[Function1]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="ShouldRecipeBeInResult" />
+  </Operation>
 </Operations>

@@ -146,16 +146,35 @@ public class RecipeDao
         return recipe;
     }
 
-    public Task<IEnumerable<RecipeWithTags>> GetRecipesForUser(long userId)
+    public Task<IEnumerable<RecipeWithTags>> SearchRecipesByName(
+        string name,
+        long userId,
+        bool includePrivateRecipesOfUser,
+        bool includePublicRecipes,
+        bool exactMatch,
+        int offset,
+        int limit)
     {
-        var parameters = new { userId };
+        var parameters = new
+        {
+            name,
+            userId,
+            includePrivateRecipesOfUser,
+            includePublicRecipes,
+            exactMatch,
+            offset,
+            limit
+        };
 
-        return QueryRecipesWithTags("sp_GetRecipesForUser", parameters);
+        return QueryRecipesWithTags("sp_SearchRecipesByName", parameters);
     }
 
-    public Task<IEnumerable<RecipeWithTags>> GetRecipesWhichBestMatchTags(
+    public Task<IEnumerable<RecipeWithTags>> SearchRecipesByTags(
         IEnumerable<string> tagNames,
         long userId,
+        bool includePrivateRecipesOfUser,
+        bool includePublicRecipes,
+        bool exactMatch,
         int offset,
         int limit)
     {
@@ -163,11 +182,14 @@ public class RecipeDao
         {
             TagNameList = String.Join(",", tagNames),
             userId,
+            includePrivateRecipesOfUser,
+            includePublicRecipes,
+            exactMatch,
             offset,
             limit
         };
 
-        return QueryRecipesWithTags("sp_GetRecipesWhichBestMatchTags", parameters);
+        return QueryRecipesWithTags("sp_SearchRecipesByTags", parameters);
     }
 
     private async Task<IEnumerable<RecipeWithTags>> QueryRecipesWithTags(

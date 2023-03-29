@@ -82,7 +82,7 @@ public class RecipeService : IRecipeService
     {
         using var transaction = _transactionFactory.Create();
         var recipeDao = _recipeDaoFactory.Create(transaction);
-        var recipes = recipeDao.GetRecipesForUser(userId);
+        var recipes = recipeDao.SearchRecipesByName(userId);
         transaction.Commit();
         return recipes;
     }
@@ -95,7 +95,7 @@ public class RecipeService : IRecipeService
     {
         using var transaction = _transactionFactory.Create();
         var recipeDao = _recipeDaoFactory.Create(transaction);
-        var recipes = recipeDao.GetRecipesWhichBestMatchTags(tagNames, userId, offset, limit);
+        var recipes = recipeDao.SearchRecipesByTags(tagNames, userId, offset, limit);
         transaction.Commit();
         return recipes;
     }

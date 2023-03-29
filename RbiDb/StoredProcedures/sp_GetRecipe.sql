@@ -2,7 +2,7 @@
 	@id int
 AS
 BEGIN
-	SELECT r.Id, r.Name, r.Description, r.IsPublic, 
+	SELECT r.Id, r.Name, r.Description, r.IsPublic, r.CreationDate,
 		r.UserId, u.Username, u.IsAnonymous
 	FROM Recipe r
 	JOIN [User] u ON u.Id = r.UserId

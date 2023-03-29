@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spRecipe_Update]
+﻿CREATE PROCEDURE [dbo].[sp_UpdateRecipe]
 	@id INT,
 	@name VARCHAR(200),
 	@description nvarchar(MAX),
