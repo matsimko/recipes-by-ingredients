@@ -5,20 +5,9 @@
 	@includePublicRecipes BIT = 1,
 	@exactMatch BIT = 0,
 	@offset INT = 0,
-	@maxRows INT = 100
+	@limit INT = 100
 AS
 BEGIN
-	IF @tagNameList IS NULL or @tagNameList = ''
-	BEGIN
-		SELECT r.Id, Name, CreationDate,
-			UserId, Username, IsAnonymous,
-			TagId, TagName AS Name
-		FROM VI_RecipeWithTags r
-		ORDER BY CreationDate
-		OFFSET @offset ROWS FETCH NEXT @maxRows ROWS ONLY;
-		RETURN;
-	END;
-
 	CREATE TABLE #TagsToMatch
 	(
 		[Name] VARCHAR(100)
@@ -43,14 +32,14 @@ BEGIN
 		JOIN #TagsToMatch ttm ON LOWER(t.Name) IN (LOWER(ttm.Name), LOWER(ttm.Name) + 's', LOWER(ttm.Name) + 'es')
 		WHERE 1 = dbo.udf_ShouldRecipeBeInResult(
 			r.IsPublic, r.UserId, @userId, @includePublicRecipes, @includePrivateRecipesOfUser)
-		GROUP BY r.Id
+		GROUP BY r.Id, r.CreationDate
 		HAVING COUNT(*) >= @minTagsToMatch
 		ORDER BY COUNT(*) DESC, r.CreationDate
-		OFFSET @offset ROWS FETCH NEXT @maxRows ROWS ONLY
+		OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
 	)
 	SELECT r.Id, Name, CreationDate,
-		UserId, Username, IsAnonymous,
-		TagId, TagName AS Name
+		UserId AS Id, Username, IsAnonymous,
+		TagId AS Id, TagName AS Name
 	FROM VI_RecipeWithTags r
 	JOIN BestRecipeMatches brm ON r.Id = brm.Id
 END

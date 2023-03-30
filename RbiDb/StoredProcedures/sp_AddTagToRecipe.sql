@@ -26,4 +26,5 @@ BEGIN
 	INSERT INTO RecipeTag (RecipeId, TagId, IsIngredient, Amount, AmountUnit)
 	VALUES (@recipeId, @tagId, @isIngredient, @amount, @amountUnit);
 
+	SELECT @tagId;
 END
