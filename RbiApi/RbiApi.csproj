@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\RbiData\RbiData.csproj" />
   </ItemGroup>
 
 </Project>
