@@ -39,20 +39,20 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Recipe> Post(RecipeCreationDto dto)
+    public Task<Recipe> Post(RecipeCreationDto dto)
     {
         var recipe = MapDto(dto);
-        return await _recipeService.Insert(recipe, GetCurrentUserId());
+        return _recipeService.Insert(recipe, GetCurrentUserId());
     }
 
     [HttpPost("{id}/Tags")]
-    public async Task<Tag> AddTagToRecipe(long id, [FromBody] string name)
+    public Task<Tag> AddTagToRecipe(long id, [FromBody] string name)
     {
-        return await _recipeService.AddTagToRecipe(new Tag { Name = name }, id, GetCurrentUserId());
+        return _recipeService.AddTagToRecipe(new Tag { Name = name }, id, GetCurrentUserId());
     }
 
     [HttpPost("{id}/Ingredients")]
-    public async Task<Ingredient> AddIngredientToRecipe(long id, IngredientCreationDto dto)
+    public Task<Ingredient> AddIngredientToRecipe(long id, IngredientCreationDto dto)
     {
         var ingredient = new Ingredient
         {
@@ -60,33 +60,33 @@ public class RecipesController : ControllerBase
             Amount = dto.Amount,
             AmountUnit = dto.AmountUnit
         };
-        return await _recipeService.AddIngredientToRecipe(ingredient, id, GetCurrentUserId());
+        return _recipeService.AddIngredientToRecipe(ingredient, id, GetCurrentUserId());
     }
 
     [HttpPut("{id}")]
-    public async Task Put(int id, RecipeCreationDto dto)
+    public Task Put(int id, RecipeCreationDto dto)
     {
         var recipe = MapDto(dto);
         recipe.Id = id;
-        await _recipeService.Update(recipe, GetCurrentUserId());
+        return _recipeService.Update(recipe, GetCurrentUserId());
     }
 
     [HttpDelete("{id}")]
-    public async Task DeleteAsync(int id)
+    public Task DeleteAsync(int id)
     {
-        await _recipeService.Delete(id, GetCurrentUserId());
+        return _recipeService.Delete(id, GetCurrentUserId());
     }
 
     [HttpDelete("{id}/Tags/{tagId}")]
-    public async Task RemoveTagFromRecipe(long id, long tagId)
+    public Task RemoveTagFromRecipe(long id, long tagId)
     {
-        await _recipeService.RemoveTagFromRecipe(new Tag { Id = tagId }, id, GetCurrentUserId());
+        return _recipeService.RemoveTagFromRecipe(new Tag { Id = tagId }, id, GetCurrentUserId());
     }
 
     [HttpDelete("{id}/Ingredients/{ingredientId}")]
-    public async Task RemoveIngredientsFromRecipe(long id, long ingredientId)
+    public Task RemoveIngredientsFromRecipe(long id, long ingredientId)
     {
-        await _recipeService.RemoveIngredientFromRecipe(new Ingredient { Id = ingredientId }, id, GetCurrentUserId());
+        return _recipeService.RemoveIngredientFromRecipe(new Ingredient { Id = ingredientId }, id, GetCurrentUserId());
     }
 
     private static Recipe MapDto(RecipeCreationDto dto)

@@ -24,9 +24,9 @@ public class RecipeDao
         _logger = logger;
     }
 
-    public async Task<long> Insert(Recipe recipe)
+    public Task<long> Insert(Recipe recipe)
     {
-        return await _mt.Connection.QuerySingleAsync<long>(
+        return _mt.Connection.QuerySingleAsync<long>(
             "sp_InsertRecipe",
             new
             {
@@ -39,7 +39,7 @@ public class RecipeDao
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<long> AddTagToRecipe(Tag tag, long recipeId)
+    public Task<long> AddTagToRecipe(Tag tag, long recipeId)
     {
         var parameters = new DynamicParameters(new
         {
@@ -53,7 +53,7 @@ public class RecipeDao
             parameters.Add("AmountUnit", ingredient.AmountUnit);
         }
 
-        return await _mt.Connection.QuerySingleAsync<long>(
+        return _mt.Connection.QuerySingleAsync<long>(
             "sp_AddTagToRecipe",
             parameters,
             _mt.Transaction,
@@ -61,9 +61,9 @@ public class RecipeDao
 
     }
 
-    public async Task RemoveTagFromRecipe(Tag tag, long recipeId)
+    public Task RemoveTagFromRecipe(Tag tag, long recipeId)
     {
-        await _mt.Connection.ExecuteAsync(
+        return _mt.Connection.ExecuteAsync(
             "sp_RemoveTagFromRecipe",
             new
             {
@@ -74,9 +74,9 @@ public class RecipeDao
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task Update(Recipe recipe)
+    public Task Update(Recipe recipe)
     {
-        await _mt.Connection.ExecuteAsync(
+        return _mt.Connection.ExecuteAsync(
            "sp_UpdateRecipe",
            new
            {
@@ -89,9 +89,9 @@ public class RecipeDao
            commandType: CommandType.StoredProcedure);
     }
 
-    public async Task Delete(long id)
+    public Task Delete(long id)
     {
-        await _mt.Connection.ExecuteAsync(
+        return _mt.Connection.ExecuteAsync(
             "sp_DeleteRecipe",
             new { id },
             _mt.Transaction,
