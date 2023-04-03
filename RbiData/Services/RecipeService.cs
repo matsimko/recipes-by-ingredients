@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using RbiData.DAOs;
 using RbiData.Entities;
-using RbiData.SearchObjects;
+using RbiShared.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

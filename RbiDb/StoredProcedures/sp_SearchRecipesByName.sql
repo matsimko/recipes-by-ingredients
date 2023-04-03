@@ -9,7 +9,7 @@ AS
 BEGIN
 	SELECT r.Id, Name, CreationDate,
 		UserId AS Id, Username, IsAnonymous,
-		TagId AS Id, TagName AS Name
+		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
 	FROM VI_RecipeWithTags r
 	WHERE 1 = dbo.udf_ShouldRecipeBeInResult(
 			r.IsPublic, r.UserId, @userId, @includePublicRecipes, @includePrivateRecipesOfUser) AND

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RbiData.Entities;
-using RbiData.SearchObjects;
+using RbiShared.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -110,54 +110,17 @@ public class RecipeDao
             new { id },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure);
-            
+
         return result.FirstOrDefault();
     }
 
     public async Task<Recipe?> GetRecipeDetail(long id)
     {
-        Recipe? recipe = null;
-        //as there is only Tag and Ingredient in the hierarchy,
-        //I don't have to do a custom hierarchy parsing with a reader
-        var result = await _mt.Connection.QueryAsync<Recipe, User?, Tag?, IngredientInfo?, Recipe>(
-            "sp_GetRecipeDetail",
-            (r, u, t, ii) =>
-            {
-                if (recipe == null)
-                {
-                    recipe = r;
-                    recipe.User = u;
-                    recipe.Tags = new();
-                }
-
-                if (t == null)
-                {
-                    return recipe;
-                }
-
-                if (ii.IsIngredient)
-                {
-                    t = new Ingredient
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Amount = ii.Amount,
-                        AmountUnit = ii.AmountUnit
-                    };
-                }
-
-                recipe.Tags.Add(t);
-                return recipe;
-            },
-            new { id },
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure,
-            splitOn: "Id, Id, IsIngredient");
-
-        return recipe;
+        var recipes = await QueryRecipesAsync("sp_GetRecipeDetail", new { id });
+        return recipes.FirstOrDefault();
     }
 
-    public async Task<IEnumerable<Recipe>> SearchRecipes(RecipeSearch rs)
+    public Task<IEnumerable<Recipe>> SearchRecipes(RecipeSearch rs)
     {
         var parameters = new
         {
@@ -170,56 +133,57 @@ public class RecipeDao
             rs.Offset,
             rs.Limit
         };
-
         _logger.LogDebug("SearchRecipe parameters={p}", JsonSerializer.Serialize(parameters));
 
-        //this implementation should be faster than the one below,
-        //but for limited number of records it is irrelevant
-        List<Recipe> recipes = new();
-        Recipe? currentRecipe = null;
-        await _mt.Connection.QueryAsync<Recipe, User?, Tag?, Recipe>(
-            "sp_SearchRecipes",
-            (r, u, t) =>
-            {
-                if (r.Id != currentRecipe?.Id)
-                {
-                    currentRecipe = r;
-                    currentRecipe.User = u;
-                    currentRecipe.Tags = new();
-                    recipes.Add(currentRecipe);
-                }
+        return QueryRecipesAsync("sp_SearchRecipes", parameters);
+    }
 
-                if (t != null)
-                {
-                    currentRecipe.Tags.Add(t);
-                }
+    private async Task<IEnumerable<Recipe>> QueryRecipesAsync(string storedProcedure, object parameters)
+    {
+        //as there is only Tag and Ingredient in the hierarchy,
+        //I don't have to do a custom hierarchy parsing with a reader
+        var result = await _mt.Connection.QueryAsync<Recipe, User?, Tag?, IngredientInfo?, Recipe>(
+           storedProcedure,
+           (r, u, t, ii) =>
+           {
+               r.User = u;
 
-                return currentRecipe;
-            },
-            parameters,
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
-        _logger.LogDebug("Recipes count={c}", recipes.Count);
-        return recipes;
+               if (t == null) return r;
 
-        //var recipes = await _mt.Connection.QueryAsync<RecipeWithTags, Tag, RecipeWithTags>(
-        //    "sp_SearchRecipes",
-        //    (r, t) =>
-        //    {
-        //        r.Tags.Add(t);
-        //        return r;
-        //    },
-        //    parameters,
-        //    _mt.Transaction,
-        //    commandType: CommandType.StoredProcedure,
-        //    splitOn: "TagId");
+               if (ii.IsIngredient)
+               {
+                   var ingredient = new Ingredient
+                   {
+                       Id = t.Id,
+                       Name = t.Name,
+                       Amount = ii.Amount,
+                       AmountUnit = ii.AmountUnit
+                   };
+                   r.Ingredients.Add(ingredient);
+               }
+               else
+               {
+                   r.Tags.Add(t);
+               }
 
-        //return recipes.GroupBy(r => r.Id).Select(g =>
-        //{
-        //    var groupedRecipe = g.First();
-        //    groupedRecipe.Tags = g.Select(r => r.Tags.First()).ToList();
-        //    return groupedRecipe;
-        //});
+               return r;
+           },
+           parameters,
+           _mt.Transaction,
+           commandType: CommandType.StoredProcedure,
+           splitOn: "Id, Id, IsIngredient");
+
+        return result.GroupBy(r => r.Id).Select(g =>
+        {
+            var groupedRecipe = g.First();
+            groupedRecipe.Tags = g.Where(r => r.Tags.Any())
+                                  .Select(r => r.Tags.First())
+                                  .ToList();
+            groupedRecipe.Ingredients = g.Where(r => r.Ingredients.Any())
+                                         .Select(r => r.Ingredients.First())
+                                         .ToList();
+            return groupedRecipe;
+        });
     }
 }
 

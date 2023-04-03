@@ -1,5 +1,5 @@
 ﻿using RbiData.Entities;
-using RbiData.SearchObjects;
+using RbiShared.SearchObjects;
 
 namespace RbiData.Services;
 public interface IRecipeService

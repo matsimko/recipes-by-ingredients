@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RbiShared.DTOs;
 using RbiData.Entities;
-using RbiData.SearchObjects;
 using RbiData.Services;
 using AutoMapper;
+using RbiShared.SearchObjects;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace RbiApi.Controllers;
 [Route("api/[controller]")]
@@ -34,7 +36,7 @@ public class RecipesController : ControllerBase
         _logger.LogDebug("RecipeSearch={rs}", rs);
 
         var recipes = await _recipeService.SearchRecipes(rs, GetCurrentUserId());
-        return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
+        return _mapper.Map<IEnumerable<Recipe>, IEnumerable<RecipeDto>>(recipes);
     }
 
     [HttpGet("{id}")]

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace RbiData.SearchObjects;
+namespace RbiShared.SearchObjects;
 
 public class RecipeSearch
 {
