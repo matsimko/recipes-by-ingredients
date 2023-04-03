@@ -1,7 +1,10 @@
-using Microsoft.Extensions.Options;
+using AutoMapper;
+using RbiApi;
 using RbiData;
 using RbiData.DAOs;
+using RbiData.Entities;
 using RbiData.Services;
+using RbiShared.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IManagedTransactionFactory, ManagedTransactionFactory>();
 builder.Services.AddSingleton<IDaoFactory<RecipeDao>, RecipeDaoFactory>();
 builder.Services.AddSingleton<IRecipeService, RecipeService>();
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 

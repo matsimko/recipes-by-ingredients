@@ -34,7 +34,7 @@ BEGIN
 		RETURN;
 	END;
 
-	SELECT r.Id, Name, CreationDate,
+	SELECT r.Id, Name, IsPublic, CreationDate,
 		UserId AS Id, Username, IsAnonymous,
 		TagId AS Id, TagName AS Name
 	FROM VI_RecipeWithTags r

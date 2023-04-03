@@ -61,13 +61,13 @@ public class RecipeDao
 
     }
 
-    public Task RemoveTagFromRecipe(Tag tag, long recipeId)
+    public Task RemoveTagFromRecipe(long tagId, long recipeId)
     {
         return _mt.Connection.ExecuteAsync(
             "sp_RemoveTagFromRecipe",
             new
             {
-                TagId = tag.Id,
+                TagId = tagId,
                 recipeId,
             },
             _mt.Transaction,

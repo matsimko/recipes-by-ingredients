@@ -58,18 +58,18 @@ public partial class RecipeService : IRecipeService
         return (Ingredient)await AddTagToRecipe(ingredient, recipeId, userId);
     }
 
-    public async Task RemoveTagFromRecipe(Tag tag, long recipeId, long userId)
+    public async Task RemoveTagFromRecipe(long tagId, long recipeId, long userId)
     {
         using var transaction = _transactionFactory.Create();
         var recipeDao = _recipeDaoFactory.Create(transaction);
         await CheckIfCanModify(recipeId, userId, recipeDao);
-        await recipeDao.RemoveTagFromRecipe(tag, recipeId);
+        await recipeDao.RemoveTagFromRecipe(tagId, recipeId);
         transaction.Commit();
     }
 
-    public async Task RemoveIngredientFromRecipe(Ingredient ingredient, long recipeId, long userId)
+    public Task RemoveIngredientFromRecipe(long ingredientId, long recipeId, long userId)
     {
-        await RemoveTagFromRecipe(ingredient, recipeId, userId);
+        return RemoveTagFromRecipe(ingredientId, recipeId, userId);
     }
     public async Task Update(Recipe recipe, long userId)
     {
