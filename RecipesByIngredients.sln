@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{66FA8EFE-5DE7-4ADF-9B63-202859F649B2}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		..\..\..\Downloads\classDiagram_entities.png = ..\..\..\Downloads\classDiagram_entities.png
 		README.md = README.md
 	EndProjectSection
 EndProject

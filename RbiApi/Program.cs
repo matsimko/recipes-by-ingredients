@@ -1,10 +1,13 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using RbiApi;
 using RbiData;
 using RbiData.DAOs;
 using RbiData.Entities;
 using RbiData.Services;
 using RbiShared.DTOs;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +35,8 @@ if (app.Environment.IsDevelopment())
         options.EnableTryItOutByDefault();
     });
 }
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

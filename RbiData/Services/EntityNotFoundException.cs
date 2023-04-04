@@ -4,23 +4,16 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using RbiData.Entities;
 
 namespace RbiData.Services;
 public class EntityNotFoundException : Exception
 {
-    public EntityNotFoundException()
+    public EntityNotFoundException(string name, long id) : this($"{name} with id {id} was not found")
     {
     }
 
     public EntityNotFoundException(string? message) : base(message)
-    {
-    }
-
-    public EntityNotFoundException(string? message, Exception? innerException) : base(message, innerException)
-    {
-    }
-
-    protected EntityNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

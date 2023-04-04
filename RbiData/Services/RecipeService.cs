@@ -95,7 +95,7 @@ public partial class RecipeService : IRecipeService
         var recipeDao = _recipeDaoFactory.Create(transaction);
         var recipe = await recipeDao.GetRecipeDetail(id);
         transaction.Commit();
-        if (recipe == null) throw new EntityNotFoundException();
+        if (recipe == null) throw new EntityNotFoundException("Recipe", id);
         if (!recipe.IsPublic && (recipe.User?.Id != userId || userId == null))
         {
             throw new OwnershipException();
@@ -121,7 +121,7 @@ public partial class RecipeService : IRecipeService
     private static async Task CheckIfCanModify(long recipeId, long userId, RecipeDao recipeDao)
     {
         var recipe = await recipeDao.GetRecipe(recipeId);
-        if (recipe == null) throw new EntityNotFoundException();
+        if (recipe == null) throw new EntityNotFoundException("Recipe", recipeId);
         if (recipe.User?.Id != userId) throw new OwnershipException();
     }
 }
