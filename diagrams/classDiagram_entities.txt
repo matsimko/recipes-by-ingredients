@@ -1,0 +1,30 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+left to right direction
+    User "0..1" --> "*" Recipe
+    Recipe "*" --> "*" Tag
+    Recipe "1" *-- "*" Ingredient
+    Tag <|- Ingredient
+    
+
+    class Recipe{
+        -name
+        -description
+        -isPublic
+        -creationDate
+    }
+    class Ingredient{
+        -amount
+    }
+
+    class Tag{
+        -name
+    }
+
+    class User{
+        -id
+        -username
+        -isAnonymous
+    }
+@enduml

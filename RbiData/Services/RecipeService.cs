@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RbiData.Services;
-public partial class RecipeService : IRecipeService
+public class RecipeService : IRecipeService
 {
     private readonly IManagedTransactionFactory _transactionFactory;
     private readonly IDaoFactory<RecipeDao> _recipeDaoFactory;

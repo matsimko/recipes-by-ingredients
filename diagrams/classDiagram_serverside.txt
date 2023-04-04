@@ -1,0 +1,83 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+left to right direction
+    IRecipeService <|. RecipeService
+    IManagedTransaction <|. ManagedTransaction
+    IManagedTransactionFactory <|. ManagedTransactionFactory
+    IDaoFactory <|. RecipeDaoFactory
+
+    RecipeDaoFactory ..> RecipeDao : instantiate
+    ManagedTransactionFactory ..> ManagedTransaction : instantiate
+    IManagedTransactionFactory ..> IManagedTransaction : instantiate
+    RecipeService --> IDaoFactory
+    RecipeService --> IManagedTransactionFactory
+    RecipeController --> IRecipeService
+
+    class RecipeDao{
+        +Insert(recipe)
+        +AddTagToRecipe(tag, recipeId)
+        +RemoveTagFromRecipe(tagId, recipeId)
+        +Update(recipe)
+        +Delete(id)
+        +GetRecipe(id)
+        +GetRecipeDetail(id)
+        +SearchRecipes(recipeSearch)
+    }
+
+    class RecipeDaoFactory{
+    }
+
+   class IDaoFactory<RecipeDao>{
+        +Create(managedTransaction)
+    }
+
+
+
+    class ManagedTransaction{
+    }
+
+    class ManagedTransactionFactory{
+        -configuration
+    }
+
+    class IManagedTransaction{
+        +Connection
+        +Transaction
+        +Commit()
+        +Dispose()
+    }
+
+    class IManagedTransactionFactory{
+        +Create()
+    }
+
+    class RecipeService {
+
+    }
+
+    class IRecipeService{
+        +Insert(recipe, userId)
+        +AddTagToRecipe(tag, recipeId, userId)
+        +AddIngredientToRecipe(ingredient, recipeId, userId);
+        +RemoveTagFromRecipe(tagId, recipeId, userId)
+        +RemoveIngredientFromRecipe(ingredientId, recipeId, userId)
+        +Update(recipe, userId)
+        +Delete(id, userId)
+        +GetRecipeDetail(id, userId?)
+        +SearchRecipes(recipeSearch, userId?)
+    }
+
+    class RecipeController{
+        -GetCurrentUserId()
+        +Get(recipeSearch?)
+        +Get(id)
+        +Post(creationDto)
+        +AddTagToRecipe(id, name)
+        +AddIngredientToRecipe(id, creationDto)
+        +Put(id, creationDto)
+        +Delete(id)
+        +RemoveTagFromRecipe(id, tagId)
+        +RemoveIngredientsFromRecipe(id, ingredientId)
+    }
+@enduml

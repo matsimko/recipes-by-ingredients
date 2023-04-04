@@ -78,7 +78,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public Task DeleteAsync(int id)
+    public Task Delete(int id)
     {
         return _recipeService.Delete(id, GetCurrentUserId());
     }
