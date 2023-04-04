@@ -1,0 +1,17 @@
+﻿@page "/"
+
+@inject HttpClient _http
+
+<PageTitle>Index</PageTitle>
+
+<h1>@data</h1>
+
+@code {
+	private string data ="Loading recipe name";
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await _http.GetFromJsonAsync<RecipeDto>("recipes/1");
+		data = result.Name;
+	}
+}
