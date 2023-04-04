@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using RbiApi;
 using RbiData;
 using RbiData.DAOs;
@@ -19,7 +20,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: allowClientAppOrigin,
                       policy =>
                       {
-                          policy.WithOrigins("https://localhost:7098").AllowAnyMethod();
+                          policy.WithOrigins("https://localhost:7098")
+                                .AllowAnyMethod()
+                                .WithHeaders(HeaderNames.ContentType);
                       });
 });
 

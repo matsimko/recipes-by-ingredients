@@ -1,17 +1,40 @@
 ﻿@page "/"
 
-@inject HttpClient _http
+@inject RecipeSource source
 
 <PageTitle>Index</PageTitle>
 
-<h1>@data</h1>
+@if (_errorText != null)
+{
+	<ClientError Text=@_errorText/>
+}
+else if (_data == null)
+{
+	<Loading/>
+}
+else 
+{
+	<h1>@_data</h1>
+}
+
 
 @code {
-	private string data ="Loading recipe name";
+	private string? _data;
+
+	private string? _errorText = null;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var result = await _http.GetFromJsonAsync<RecipeDto>("recipes/1");
-		data = result.Name;
+		try
+		{
+			var recipe = await source.Get(2);
+			recipe.Name = $"R2-updated{DateTimeOffset.Now}";
+			await source.Update(recipe);
+			_data = recipe.Name;
+		}
+		catch (ClientErrorException ex)
+		{
+			_errorText = ex.Message;
+		}
 	}
 }
