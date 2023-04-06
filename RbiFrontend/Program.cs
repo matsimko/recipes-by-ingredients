@@ -12,5 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddScoped<RecipeSource>();
 builder.Services.AddScoped<TagSource>();
 
+builder.Services.AddScoped<Auth>();
+
 await builder.Build().RunAsync();
 

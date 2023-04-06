@@ -14,7 +14,7 @@ public class ApiAccessTest
     {
         var search = new RecipeSearch
         {
-            TagNames = new[] { "T1", "T2" },
+            TagNames = new List<string> { "T1", "T2" },
             UserId = 1,
             IncludePrivateRecipesOfUser = true,
             IncludePublicRecipes = false,

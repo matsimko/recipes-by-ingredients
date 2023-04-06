@@ -5,7 +5,7 @@ namespace RbiShared.SearchObjects;
 public class RecipeSearch
 {
     public string? Name { get; set; }
-    public IEnumerable<string>? TagNames { get; set; }
+    public List<string>? TagNames { get; set; }
     public long? UserId { get; set; }
     public bool IncludePrivateRecipesOfUser { get; set; }
     public bool IncludePublicRecipes { get; set; }

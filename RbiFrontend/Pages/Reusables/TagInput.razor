@@ -3,18 +3,24 @@
 @inject ILogger<TagInput> _logger
 @inject TagSource _tagSource
 
-<div class="vstack gap-3">
+<div class="vstack gap-2">
 	@for (int i = 0; i < Tags.Count; i++)
 	{
 		int iCopy = i;
-		<div class="hstack gap-2">
-			<InputText class="form-control" 
-				   tabindex=@(iCopy + 1)
-				   @bind-Value=Tags[iCopy].Name @oninput="(e) => HandleChange(e.Value.ToString(), iCopy)"
-				   list="tagDatalist" />
-			<button class="btn btn-secondary" @onclick="() => Remove(iCopy)" tabindex=@(Tags.Count + iCopy + 1)>
-				<span class="oi oi-x"></span>
-			</button>
+		<div class="row g-2">
+			<div class="col-auto">
+				<input class="form-control" 
+					   tabindex=@(iCopy + 1)
+					   @bind=Tags[iCopy]
+					   @oninput="(e) => HandleChange(e.Value.ToString(), iCopy)"
+					   maxlength="100"
+					   list="tagDatalist" />
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-secondary col-auto" @onclick="() => Remove(iCopy)" tabindex=@(Tags.Count + iCopy + 1)>
+					<span class="oi oi-x"></span>
+				</button>
+			</div>
 		</div>
 	}
 </div>
@@ -28,34 +34,13 @@
 
 @code {
 	[Parameter]
-	public List<TagDto> Tags { get; set; }
+	public List<string> Tags { get; set; }
 
 	private IEnumerable<TagDto> _tagSuggestions = new List<TagDto>();
 
-	//private List<TagDto>? _tags;
-
-	//[Parameter]
-	//public List<TagDto>? Tags
-	//{
-	//    get => _tags;
-	//    set
-	//    {
-	//        if (_tags == value) return;
-
-	//        _tags = value;
-	//        TagsChanged.InvokeAsync(value);
-	//    }
-	//}
-
-	//[Parameter]
-	//public EventCallback<List<TagDto>> TagsChanged { get; set; }
-
-	//[Parameter]
-	//public Expression<Func<List<TagDto>>>? TagsExpression { get; set; }
-
 	private async Task HandleChange(string name, int i)
 	{
-		//Tags[i].Name = name; //the two-way bindings is updated only in @onchange, but I don't need to update it here
+		//Tags[i] = name;
 		if (i == Tags.Count - 1 && name.Length > 0)
 		{
 			AddTag();
@@ -86,6 +71,6 @@
 
 	private void AddTag()
 	{
-		Tags.Add(new TagDto { Name = string.Empty });
+		Tags.Add(string.Empty);
 	}
 }
