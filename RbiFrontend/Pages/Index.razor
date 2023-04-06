@@ -6,20 +6,30 @@
 
 @if (_errorText != null)
 {
-	<ClientError Text=@_errorText/>
+	<ClientError Text=@_errorText />
 }
-else if (_data == null)
+else if (_recipe == null)
 {
-	<Loading/>
+	<Loading />
 }
-else 
+else
 {
-	<h1>@_data</h1>
+	<h1>@_recipe.Name</h1>
+	<ul>
+		@foreach (var tag in _recipe.Tags)
+		{
+			<li>@tag.Name</li>
+		}
+	</ul>
+	<EditForm Model="@_tags" OnSubmit="@HandleSubmit">
+		<TagInput Tags=_tags /> @*@bind-Tags=_recipe.Tags*@
+	</EditForm>
 }
 
 
 @code {
-	private string? _data;
+	private RecipeDto? _recipe = null;
+	private List<TagDto> _tags = new();
 
 	private string? _errorText = null;
 
@@ -27,14 +37,20 @@ else
 	{
 		try
 		{
-			var recipe = await source.Get(2);
-			recipe.Name = $"R2-updated{DateTimeOffset.Now}";
-			await source.Update(recipe);
-			_data = recipe.Name;
+			_recipe = await source.Get(2);
+			_recipe.Name = $"R2-updated{DateTimeOffset.Now}";
+			await source.Update(_recipe);
+
 		}
 		catch (ClientErrorException ex)
 		{
 			_errorText = ex.Message;
 		}
 	}
+
+	protected void HandleSubmit()
+	{
+
+	}
+
 }

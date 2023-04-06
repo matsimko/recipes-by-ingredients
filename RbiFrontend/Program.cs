@@ -10,5 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7132/api/") });
 
 builder.Services.AddScoped<RecipeSource>();
+builder.Services.AddScoped<TagSource>();
 
 await builder.Build().RunAsync();
+
