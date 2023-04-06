@@ -76,6 +76,7 @@
     <Build Include="Functions\udf_ShouldRecipeBeInResult.sql" />
     <Build Include="Views\VI_RecipeWithTags.sql" />
     <Build Include="StoredProcedures\sp_SearchRecipes.sql" />
+    <Build Include="StoredProcedures\sp_SearchTags.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

@@ -34,6 +34,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IManagedTransactionFactory, ManagedTransactionFactory>();
 builder.Services.AddSingleton<IDaoFactory<RecipeDao>, RecipeDaoFactory>();
 builder.Services.AddSingleton<IRecipeService, RecipeService>();
+builder.Services.AddSingleton<IDaoFactory<TagDao>, TagDaoFactory>();
+builder.Services.AddSingleton<ITagService, TagService>();
+builder.Services.AddSingleton<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

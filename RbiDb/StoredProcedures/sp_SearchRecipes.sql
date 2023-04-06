@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[sp_SearchRecipes]
-	@name VARCHAR(200) = NULL,
-	@tagNameList VARCHAR(MAX) = NULL,
+	@name NVARCHAR(200) = NULL,
+	@tagNameList NVARCHAR(MAX) = NULL,
 	@userId INT = NULL,
 	@includePrivateRecipesOfUser BIT = 1,
 	@includePublicRecipes BIT = 1,

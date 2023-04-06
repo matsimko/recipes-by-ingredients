@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].sp_SearchRecipesByName
-	@name VARCHAR(200),
+	@name NVARCHAR(200),
 	@userId INT = NULL,
 	@includePrivateRecipesOfUser BIT = 1,
 	@includePublicRecipes BIT = 1,
@@ -14,7 +14,7 @@ BEGIN
 	WHERE 1 = dbo.udf_ShouldRecipeBeInResult(
 			r.IsPublic, r.UserId, @userId, @includePublicRecipes, @includePrivateRecipesOfUser) AND
 			--Temporary solution until SQL Server instance with full-text search is used
-			LOWER(@name) = LOWER(r.Name)
+			@name = r.Name --the instance is set to be case insensitive, so LOWER() is not necessary
 	ORDER BY r.CreationDate
 	OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
 END

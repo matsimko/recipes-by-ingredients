@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_AddTagToRecipe]
-	@name VARCHAR(100),
+	@name NVARCHAR(100),
 	@recipeId INT,
 	@isIngredient BIT = 0,
 	@amount DECIMAL(8,2) = NULL,

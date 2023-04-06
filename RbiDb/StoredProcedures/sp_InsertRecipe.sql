@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[sp_InsertRecipe]
-	@name VARCHAR(200),
-	@description nvarchar(MAX),
+	@name NVARCHAR(200),
+	@description NVARCHAR(MAX),
 	@isPublic BIT,
 	@userId INT
 AS

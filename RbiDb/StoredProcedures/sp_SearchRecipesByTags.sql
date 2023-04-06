@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_SearchRecipesByTags]
-	@tagNameList VARCHAR(MAX),
+	@tagNameList NVARCHAR(MAX),
 	@userId INT = NULL,
 	@includePrivateRecipesOfUser BIT = 1,
 	@includePublicRecipes BIT = 1,
@@ -10,7 +10,7 @@ AS
 BEGIN
 	CREATE TABLE #TagsToMatch
 	(
-		[Name] VARCHAR(100)
+		[Name] NVARCHAR(100)
 	);
 	INSERT INTO #TagsToMatch
 	SELECT * FROM string_split(@tagNameList, ',');
@@ -29,7 +29,7 @@ BEGIN
 		JOIN RecipeTag rt ON rt.RecipeId = r.Id
 		JOIN Tag t ON t.Id = rt.TagId
 		--Temporary solution until SQL Server instance with full-text search is used
-		JOIN #TagsToMatch ttm ON LOWER(t.Name) IN (LOWER(ttm.Name), LOWER(ttm.Name) + 's', LOWER(ttm.Name) + 'es')
+		JOIN #TagsToMatch ttm ON t.Name IN (ttm.Name, ttm.Name + 's', ttm.Name + 'es') --the instance is set to be case insensitive, so LOWER() is not necessary
 		WHERE 1 = dbo.udf_ShouldRecipeBeInResult(
 			r.IsPublic, r.UserId, @userId, @includePublicRecipes, @includePrivateRecipesOfUser)
 		GROUP BY r.Id, r.CreationDate
