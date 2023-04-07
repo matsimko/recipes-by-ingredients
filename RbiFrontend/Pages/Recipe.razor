@@ -1,0 +1,61 @@
+﻿@page "/recipes/{Id:long}/{Name?}"
+
+@inject RecipeSource _recipeSource
+
+@if(_recipe == null)
+{
+	<Loading/>
+}
+else if(Edit)
+{
+	<EditRecipe recipe="@_recipe"/>
+}
+else
+{
+	<div class="d-flex justify-content-between align-items-baseline">
+		<h1>@_recipe.Name</h1>
+		<span>Author: <a href="/user/@_recipe.User.Id">@_recipe.User.Username</a></span>
+	</div>
+	<div>
+		@for(int i = 0; i < _recipe.Tags.Count; i++)
+		{
+			<span>#@_recipe.Tags[i].Name</span>
+			if(i < _recipe.Tags.Count - 1)
+			{
+				<span>, </span>
+			}
+		}
+	</div>
+	<hr />
+	<p>@_recipe.Description</p>
+
+	<h2>Ingredients</h2>
+	<ul>
+		@foreach(var ingredient in _recipe.Ingredients)
+		{
+			<li>@ingredient.Amount @ingredient.AmountUnit @ingredient.Name</li>
+		}
+	</ul>
+
+	<h2>Instructions</h2>
+
+}
+
+
+@code {
+	[Parameter]
+	public long Id { get; set; }
+	[Parameter]
+	public string? Name { get; set; }
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public bool Edit { get; set; }
+
+	private RecipeDto? _recipe;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_recipe = await _recipeSource.Get(Id);
+	}
+}

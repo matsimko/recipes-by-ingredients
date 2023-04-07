@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace RbiFrontend.ApiAccess;
@@ -22,4 +23,12 @@ public static class UrlUtils
                     select $"{name}={HttpUtility.UrlEncode(item.ToString())}";
         return string.Join("&", items);
     }
+
+    public static string EncodeToReadableUrl(string text)
+    {
+        text = text.Replace(" ", "_");
+        text = new Regex("[^a-zA-Z0-9_.-]").Replace(text, "");
+        return text;
+		//return HttpUtility.UrlEncode(text);
+	}
 }

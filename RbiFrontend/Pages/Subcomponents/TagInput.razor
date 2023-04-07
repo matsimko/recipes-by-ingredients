@@ -9,18 +9,23 @@
 		int iCopy = i;
 		<div class="row g-2">
 			<div class="col-auto">
-				<input class="form-control" 
-					   tabindex=@(iCopy + 1)
-					   @bind=Tags[iCopy]
-					   @oninput="(e) => HandleChange(e.Value.ToString(), iCopy)"
-					   maxlength="100"
-					   list="tagDatalist" />
+				<input class="form-control"
+		   tabindex=@(iCopy + 1)
+				   @bind=Tags[iCopy]
+				   @oninput="(e) => HandleChange(e.Value.ToString(), iCopy)"
+		   maxlength="100"
+		   list="tagDatalist"
+		   placeholder="Name of ingredient or tag" />
 			</div>
-			<div class="col-auto">
-				<button class="btn btn-secondary col-auto" @onclick="() => Remove(iCopy)" tabindex=@(Tags.Count + iCopy + 1)>
-					<span class="oi oi-x"></span>
-				</button>
-			</div>
+			@if (i < Tags.Count - 1)
+			{
+				<div class="col-auto">
+					<button class="btn btn-secondary col-auto"
+					@onclick="() => Remove(iCopy)" tabindex=@(Tags.Count + iCopy + 1)>
+						<span class="oi oi-x"></span>
+					</button>
+				</div>
+			}
 		</div>
 	}
 </div>
@@ -46,7 +51,7 @@
 			AddTag();
 		}
 
-		if(name.Length > 2)
+		if (name.Length > 2)
 		{
 			_tagSuggestions = await _tagSource.Search(new { prefix = name });
 		}
