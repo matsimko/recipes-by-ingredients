@@ -38,7 +38,7 @@ BEGIN
 		OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
 	)
 	SELECT r.Id, Name, CreationDate,
-		UserId AS Id, Username, IsAnonymous,
+		UserId AS Id, Username,
 		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
 	FROM VI_RecipeWithTags r
 	JOIN BestRecipeMatches brm ON r.Id = brm.Id

@@ -35,7 +35,7 @@ BEGIN
 	END;
 
 	SELECT r.Id, Name, IsPublic, CreationDate,
-		UserId AS Id, Username, IsAnonymous,
+		UserId AS Id, Username,
 		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
 	FROM VI_RecipeWithTags r
 	ORDER BY CreationDate

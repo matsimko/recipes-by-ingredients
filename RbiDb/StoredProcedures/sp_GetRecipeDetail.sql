@@ -3,7 +3,7 @@
 AS
 BEGIN
 	SELECT Id, Name, Description, IsPublic, CreationDate,
-		UserId AS Id, Username, IsAnonymous,
+		UserId AS Id, Username,
 		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
 	FROM VI_RecipeWithTags
 	WHERE Id = @id;

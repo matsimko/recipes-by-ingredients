@@ -83,5 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RbiDb.publish.xml" />
+    <None Include="RbiDb.publish_recreate_db.xml" />
   </ItemGroup>
 </Project>
