@@ -2,49 +2,62 @@
 
 @inject RecipeSource _recipeSource
 
-@if(_recipe == null)
+<PageTitle>Recipe</PageTitle>
+
+@if (_recipe == null)
 {
-	<Loading/>
+	<Loading />
 }
-else if(Edit)
+else if (Edit)
 {
-	<EditRecipe recipe="@_recipe"/>
+	<EditRecipe recipe="@_recipe" />
 }
 else
 {
-	<div class="d-flex justify-content-between align-items-baseline">
-		<h1>@_recipe.Name</h1>
-		<span>Author: <a href="/user/@_recipe.User.Id">@_recipe.User.Username</a></span>
-	</div>
-	<div>
-		@for(int i = 0; i < _recipe.Tags.Count; i++)
-		{
-			<span>#@_recipe.Tags[i].Name</span>
-			if(i < _recipe.Tags.Count - 1)
+	<div class="border p-3 border-3 rounded">
+		<div class="d-flex justify-content-between align-items-center">
+			<h1>@_recipe.Name</h1>
+			<div>
+				@if (@_recipe.User != null)
+				{
+					<div>Author: <a href="/user/@_recipe.User.Id">@_recipe.User.Username</a></div>
+				}
+				<div>@_recipe.CreationDate.ToDateString()</div>
+			</div>
+		</div>
+		<div>
+			@for (int i = 0; i < _recipe.Tags.Count; i++)
 			{
-				<span>, </span>
+				<span>#@_recipe.Tags[i].Name</span>
+				if (i < _recipe.Tags.Count - 1)
+				{
+				}
 			}
-		}
+		</div>
+		<div>@_recipe.Description</div>
 	</div>
-	<hr />
-	<p>@_recipe.Description</p>
-
-	<h2>Ingredients</h2>
-	<ul>
-		@foreach(var ingredient in _recipe.Ingredients)
-		{
-			<li>@ingredient.Amount @ingredient.AmountUnit @ingredient.Name</li>
-		}
-	</ul>
-
-	<h2>Instructions</h2>
-	<ol>
-		@foreach (var instruction in _recipe.Instructions)
-		{
-			<li>@instruction.Text</li>
-		}
-	</ol>
-
+	<div class="row mt-4">
+		<div class="col-xl-5">
+			<h2>Ingredients</h2>
+			<ul>
+				<li>ingredient.Amount adsa  dasdas da das adsa ingredient.AmountUnit ingredient.Name</li>
+				@foreach (var ingredient in _recipe.Ingredients)
+				{
+					<li>@ingredient.Amount @ingredient.AmountUnit @ingredient.Name</li>
+				}
+			</ul>
+		</div>
+		<div class="col-xl-1"></div>
+		<div class="col-xl-6">
+			<h2>Instructions</h2>
+			<ol>
+				@foreach (var instruction in _recipe.Instructions)
+				{
+					<li>@instruction.Text</li>
+				}
+			</ol>
+		</div>
+	</div>
 }
 
 

@@ -53,11 +53,11 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<RecipeDto> Post(RecipeCreationDto dto)
+    public async Task<RecipeDetailDto> Post(RecipeCreationDto dto)
     {
         var recipe = _mapper.Map<Recipe>(dto);
         recipe = await _recipeService.Insert(recipe, _userService.GetCurrentUserId());
-        return _mapper.Map<RecipeDto>(recipe);
+        return _mapper.Map<RecipeDetailDto>(recipe);
     }
 
     [HttpPost("{id}/Tags")]

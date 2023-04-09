@@ -7,13 +7,18 @@
 
     <main>
         <div class="top-row px-4">
+            <a href="/create-recipe" class="icon-link"><span class="oi oi-plus"></span> New recipe</a>
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
         <article class="content px-4">
-            <ErrorBoundary>
-                @Body
-            </ErrorBoundary>
+		    <div class="row">
+                <div class="col-xl-9">
+			        <ErrorBoundary>
+                        @Body
+                    </ErrorBoundary>
+                </div>
+		    </div>
         </article>
     </main>
 </div>

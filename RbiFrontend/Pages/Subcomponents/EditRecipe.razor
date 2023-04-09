@@ -1,5 +1,71 @@
-﻿
+﻿@page "/create-recipe"
+
+@inject RecipeSource _recipeSource
+@inject NavigationManager _navigationManager;
+
+<EditForm Model="@Recipe" OnValidSubmit="@SaveRecipe">
+	<InputText @bind-Value=Recipe.Name class="form-control" />
+	<InputTextArea @bind-Value=Recipe.Description class="form-control" />
+
+	<button>Save</button>
+</EditForm>
+
+<div class="position-absolute bottom-0">
+	@for (int i = 0; i < _successCount; i++)
+	{
+		<div class="alert alert-success">
+			The recipe has been saved successfully.
+		</div>
+	}
+</div>
 
 @code {
+	[Parameter]
+	public RecipeDetailDto Recipe { get; set; } = null!; //always not null after OnInitialized
 
+	private RecipeDetailDto _oldRecipe = null!;
+	private RecipeCreationDto _oldCreationDto = null!;
+	private int _successCount = 0;
+
+	protected override void OnInitialized()
+	{
+		if(Recipe == null)
+		{
+			Recipe = new RecipeDetailDto { Name = "" };
+		}
+		_oldRecipe = new RecipeDetailDto(Recipe);
+		_oldCreationDto = ExtractCreationDto();
+	}
+
+	private async Task SaveRecipe()
+	{
+		var creationDto = ExtractCreationDto();
+		if(Recipe.Id == 0)
+		{
+			Recipe = await _recipeSource.Insert(creationDto);
+			_navigationManager.NavigateTo($"/recipes/{Recipe.Id}");
+		}
+		else if(creationDto != _oldCreationDto)
+		{
+			await _recipeSource.Update(Recipe.Id, creationDto);
+		}
+
+		//tags, ingredients, instructions
+
+		_oldRecipe = new RecipeDetailDto(Recipe);
+		_oldCreationDto = creationDto;
+
+		_successCount++;
+		await Task.Delay(3000).ContinueWith((t) => _successCount--);
+	}
+
+	private RecipeCreationDto ExtractCreationDto()
+	{
+		return new RecipeCreationDto(
+			Recipe.Name,
+			Recipe.IsPublic,
+			Recipe.Description,
+			Recipe.PrepTimeMins,
+			Recipe.CookTimeMins);
+	}
 }

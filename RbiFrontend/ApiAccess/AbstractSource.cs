@@ -41,15 +41,15 @@ public abstract class AbstractSource<T, U, V>
         return _http.GetFromJsonAsync<IEnumerable<T>>($"{ResourceName}?{queryString}");
     }
 
-    public async Task<T> Insert(U dto)
+    public async Task<V> Insert(U dto)
     {
         var response = await _http.PostAsJsonAsync($"{ResourceName}", dto);
-        return await response.Content.ReadFromJsonAsync<T>();
+        return await response.Content.ReadFromJsonAsync<V>();
     }
 
-    public Task Update(U dto)
+    public Task Update(long id, U dto)
     {
-        return _http.PutAsJsonAsync($"{ResourceName}", dto);
+        return _http.PutAsJsonAsync($"{ResourceName}/{id}", dto);
     }
 
     public Task Delete(long id)

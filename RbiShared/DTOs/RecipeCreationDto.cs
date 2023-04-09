@@ -1,8 +1,8 @@
 ﻿namespace RbiShared.DTOs;
 
-public class RecipeCreationDto
-{
-    public string? Name { get; set; }
-    public bool IsPublic { get; set; }
-    public string? Description { get; set; }
-}
+public record RecipeCreationDto(
+	string Name,
+	bool IsPublic,
+	string? Description,
+	int? PrepTimeMins,
+	int? CookTimeMins);
