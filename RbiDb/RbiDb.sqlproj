@@ -77,6 +77,10 @@
     <Build Include="Views\VI_RecipeWithTags.sql" />
     <Build Include="StoredProcedures\sp_SearchRecipes.sql" />
     <Build Include="StoredProcedures\sp_SearchTags.sql" />
+    <Build Include="Tables\Instruction.sql" />
+    <Build Include="StoredProcedures\sp_AddInstructionToRecipe.sql" />
+    <Build Include="StoredProcedures\sp_RemoveInstructionFromRecipe.sql" />
+    <Build Include="StoredProcedures\sp_GetInstructionsForRecipe.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

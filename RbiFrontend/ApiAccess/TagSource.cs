@@ -2,7 +2,7 @@
 
 namespace RbiFrontend.ApiAccess;
 
-public class TagSource : AbstractSource<TagDto>
+public class TagSource : AbstractSource<TagDto, string, TagDto>
 {
     protected override string ResourceName { get; } = "tags";
 

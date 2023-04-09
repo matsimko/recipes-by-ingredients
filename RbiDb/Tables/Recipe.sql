@@ -5,6 +5,8 @@
     [Description] NVARCHAR(MAX) NULL, 
     [IsPublic] BIT NOT NULL DEFAULT 0,
     [UserId] INT NULL,
+    [PrepTimeMins] INT NULL,
+    [CookTimeMins] INT NULL,
     [CreationDate] DATETIME2 NOT NULL DEFAULT GETDATE(), 
 
     CONSTRAINT [FK_Recipe_User] FOREIGN KEY ([UserId]) REFERENCES [User]([Id]), 

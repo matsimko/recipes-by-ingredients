@@ -3,7 +3,13 @@ using System.Net.Http.Json;
 
 namespace RbiFrontend.ApiAccess;
 
-public abstract class AbstractSource<T>
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T">Regular DTO</typeparam>
+/// <typeparam name="U">Creation/update DTO</typeparam>
+/// <typeparam name="V">Detail DTO</typeparam>
+public abstract class AbstractSource<T, U, V>
 {
     protected readonly HttpClient _http;
     protected abstract string ResourceName { get; }
@@ -13,7 +19,7 @@ public abstract class AbstractSource<T>
         _http = http;
     }
 
-    public async Task<T> Get(long id)
+    public async Task<V> Get(long id)
     {
         var response = await _http.GetAsync($"{ResourceName}/{id}");
         if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Forbidden)
@@ -21,7 +27,7 @@ public abstract class AbstractSource<T>
             var errorMessage = await response.Content.ReadFromJsonAsync<ErrorMessage>();
             throw new ClientErrorException(errorMessage?.Error);
         }
-        return await response.Content.ReadFromJsonAsync<T>();
+        return await response.Content.ReadFromJsonAsync<V>();
     }
 
     public Task<IEnumerable<T>> GetAll()
@@ -35,13 +41,13 @@ public abstract class AbstractSource<T>
         return _http.GetFromJsonAsync<IEnumerable<T>>($"{ResourceName}?{queryString}");
     }
 
-    public async Task<T> Insert(T dto)
+    public async Task<T> Insert(U dto)
     {
         var response = await _http.PostAsJsonAsync($"{ResourceName}", dto);
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
-    public Task Update(T dto)
+    public Task Update(U dto)
     {
         return _http.PutAsJsonAsync($"{ResourceName}", dto);
     }

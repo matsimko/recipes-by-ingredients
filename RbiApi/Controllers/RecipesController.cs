@@ -46,10 +46,10 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<RecipeDto> Get(long id)
+    public async Task<RecipeDetailDto> Get(long id)
     {
         var recipe = await _recipeService.GetRecipeDetail(id, _userService.GetCurrentUserId());
-        return _mapper.Map<RecipeDto>(recipe);
+        return _mapper.Map<RecipeDetailDto>(recipe);
     }
 
     [HttpPost]
@@ -75,7 +75,15 @@ public class RecipesController : ControllerBase
         return _mapper.Map<IngredientDto>(ingredient);
     }
 
-    [HttpPut("{id}")]
+	[HttpPost("{id}/Instructions")]
+	public async Task<InstructionDto> AddInstructionToRecipe(long id, InstructionDto dto)
+	{
+        var instruction = _mapper.Map<Instruction>(dto);
+		instruction = await _recipeService.AddInstructionToRecipe(instruction, id, _userService.GetCurrentUserId());
+		return _mapper.Map<InstructionDto>(instruction);
+	}
+
+	[HttpPut("{id}")]
     public Task Put(int id, RecipeCreationDto dto)
     {
         var recipe = _mapper.Map<Recipe>(dto);

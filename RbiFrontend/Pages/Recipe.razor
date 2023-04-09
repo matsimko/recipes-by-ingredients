@@ -38,6 +38,12 @@ else
 	</ul>
 
 	<h2>Instructions</h2>
+	<ol>
+		@foreach (var instruction in _recipe.Instructions)
+		{
+			<li>@instruction.Text</li>
+		}
+	</ol>
 
 }
 
@@ -52,7 +58,7 @@ else
 	[SupplyParameterFromQuery]
 	public bool Edit { get; set; }
 
-	private RecipeDto? _recipe;
+	private RecipeDetailDto? _recipe;
 
 	protected override async Task OnInitializedAsync()
 	{

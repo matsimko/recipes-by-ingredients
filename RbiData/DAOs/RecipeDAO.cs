@@ -61,20 +61,49 @@ public class RecipeDao
 
     }
 
-    public Task RemoveTagFromRecipe(long tagId, long recipeId)
+	public Task AddInstructionToRecipe(Instruction instruction, long recipeId)
+	{
+        var parameters = new
+        {
+            recipeId,
+            instruction.OrderNum,
+            instruction.Text
+        };
+
+		return _mt.Connection.ExecuteAsync(
+			"sp_AddInstructionToRecipe",
+			parameters,
+			_mt.Transaction,
+			commandType: CommandType.StoredProcedure);
+	}
+
+	public Task RemoveTagFromRecipe(long tagId, long recipeId)
     {
         return _mt.Connection.ExecuteAsync(
             "sp_RemoveTagFromRecipe",
             new
             {
-                TagId = tagId,
+                tagId,
                 recipeId,
             },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure);
     }
 
-    public Task Update(Recipe recipe)
+	public Task RemoveInstructionFromRecipe(long orderNum, long recipeId)
+	{
+		return _mt.Connection.ExecuteAsync(
+			"sp_RemoveInstructionFromRecipe",
+			new
+			{
+				orderNum,
+				recipeId,
+			},
+			_mt.Transaction,
+			commandType: CommandType.StoredProcedure);
+	}
+
+	public Task Update(Recipe recipe)
     {
         return _mt.Connection.ExecuteAsync(
            "sp_UpdateRecipe",
@@ -116,8 +145,15 @@ public class RecipeDao
 
     public async Task<Recipe?> GetRecipeDetail(long id)
     {
-        var recipes = await QueryRecipesAsync("sp_GetRecipeDetail", new { id });
-        return recipes.FirstOrDefault();
+        var result = await QueryRecipesAsync("sp_GetRecipeDetail", new { id });
+        var recipe = result.FirstOrDefault();
+        var instructions = await _mt.Connection.QueryAsync<Instruction>(
+			"sp_GetInstructionsForRecipe",
+			new { RecipeId = id },
+			_mt.Transaction,
+			commandType: CommandType.StoredProcedure);
+        recipe.Instructions = instructions.ToList();
+        return recipe;
     }
 
     public Task<IEnumerable<Recipe>> SearchRecipes(RecipeSearch rs)

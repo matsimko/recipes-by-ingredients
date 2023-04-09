@@ -10,11 +10,14 @@ public class MappingProfile : Profile
 	{
 		CreateMap<Recipe, RecipeDto>().ReverseMap();
         CreateMap<Recipe, RecipeCreationDto>().ReverseMap();
+		CreateMap<Recipe, RecipeDetailDto>().ReverseMap();
 
 		CreateMap<Tag, TagDto>().ReverseMap();
 		CreateMap<Ingredient, IngredientDto>().ReverseMap();
 		CreateMap<Ingredient, IngredientCreationDto>().ReverseMap();
 
 		CreateMap<User, UserDto>().ReverseMap();
+
+		CreateMap<Instruction, InstructionDto>().ReverseMap();
     }
 }

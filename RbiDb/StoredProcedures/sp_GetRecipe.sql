@@ -2,7 +2,7 @@
 	@id int
 AS
 BEGIN
-	SELECT r.Id, r.Name, r.Description, r.IsPublic, r.CreationDate,
+	SELECT r.Id, r.Name, r.Description, r.IsPublic, r.CreationDate, r.PrepTimeMins, r.CookTimeMins,
 		r.UserId AS Id, u.Username
 	FROM Recipe r
 	LEFT JOIN [User] u ON u.Id = r.UserId
