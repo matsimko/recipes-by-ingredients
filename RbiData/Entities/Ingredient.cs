@@ -2,6 +2,7 @@
 
 public class Ingredient : Tag
 {
-    public float? Amount { get; set; }
+	public int OrderNum { get; set; }
+	public float? Amount { get; set; }
     public string? AmountUnit { get; set; }
 }

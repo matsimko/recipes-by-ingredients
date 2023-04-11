@@ -7,7 +7,24 @@
 	<InputText @bind-Value=Recipe.Name class="form-control" />
 	<InputTextArea @bind-Value=Recipe.Description class="form-control" />
 
-	<button>Save</button>
+	<h2>Tags</h2>
+	<ListInput Ordered="false" Horizontal="true" Items="Recipe.Tags" Context="tag">
+		<ItemTemplate>
+			<InputText @bind-Value=tag.Name class="form-control"/>
+		</ItemTemplate>
+	</ListInput>
+
+	<h2>Ingredients</h2>
+	<ListInput Items="Recipe.Ingredients" Context="ingredient">
+		<ItemTemplate>
+			<InputText @bind-Value=ingredient.Name class="form-control"/>
+			<InputNumber @bind-Value=ingredient.Amount class="form-control" />
+			<InputText @bind-Value=ingredient.AmountUnit class="form-control" />
+		</ItemTemplate>
+	</ListInput>
+
+
+	<button class="btn btn-primary">Save</button>
 </EditForm>
 
 <div class="position-absolute bottom-0">

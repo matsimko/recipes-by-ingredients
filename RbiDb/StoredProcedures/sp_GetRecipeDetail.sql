@@ -4,7 +4,7 @@ AS
 BEGIN
 	SELECT Id, Name, Description, IsPublic, CreationDate, PrepTimeMins, CookTimeMins,
 		UserId AS Id, Username,
-		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
+		TagId AS Id, TagName AS Name, IsIngredient, OrderNum, Amount, AmountUnit
 	FROM VI_RecipeWithTags
 	WHERE Id = @id;
 END

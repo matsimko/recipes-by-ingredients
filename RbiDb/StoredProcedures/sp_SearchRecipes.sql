@@ -36,7 +36,7 @@ BEGIN
 
 	SELECT r.Id, Name, IsPublic, CreationDate,
 		UserId AS Id, Username,
-		TagId AS Id, TagName AS Name, IsIngredient, Amount, AmountUnit
+		TagId AS Id, TagName AS Name, IsIngredient /*, OrderNum, Amount, AmountUnit*/
 	FROM VI_RecipeWithTags r
 	ORDER BY CreationDate
 	OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;

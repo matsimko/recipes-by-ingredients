@@ -8,18 +8,23 @@
 					<a href="/recipes/@recipe.Id/@UrlUtils.EncodeToReadableUrl(@recipe.Name)" class="stretched-link"></a>
 					<div class="d-flex justify-content-between">
 						<h4 class="card-title">@recipe.Name</h4>
-						<a href="/users/@recipe.User.Id" class="card-subtitle text-body-secondary">@recipe.User.Username</a>
+						@if(recipe.User != null)
+						{
+							<a href="/users/@recipe.User.Id" class="card-subtitle text-body-secondary">
+								@recipe.User.Username
+							</a>
+						}
 					</div>
 					<div class="hstack gap-2">
 						@foreach (var tag in recipe.Tags)
 						{
-							<div class="border border-secondary rounded px-2 py-1">#@tag.Name</div>
+							<div class="border border-secondary rounded px-2 py-1">#@tag</div>
 						}
 					</div>
 					<div class="hstack gap-2">
 						@foreach (var ingredient in recipe.Ingredients)
 						{
-							<div class="border">@ingredient.Name</div>
+							<div class="border">@ingredient</div>
 						}
 					</div>
 				</div>

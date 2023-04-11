@@ -49,7 +49,8 @@ public class RecipeDao
         if (tag is Ingredient ingredient)
         {
             parameters.Add("IsIngredient", true);
-            parameters.Add("Amount", ingredient.Amount);
+			parameters.Add("OrderNum", ingredient.OrderNum);
+			parameters.Add("Amount", ingredient.Amount);
             parameters.Add("AmountUnit", ingredient.AmountUnit);
         }
 
@@ -192,6 +193,7 @@ public class RecipeDao
                    {
                        Id = t.Id,
                        Name = t.Name,
+                       OrderNum = ii.OrderNum,
                        Amount = ii.Amount,
                        AmountUnit = ii.AmountUnit
                    };
@@ -225,6 +227,7 @@ public class RecipeDao
 
 internal class IngredientInfo
 {
+    public int OrderNum { get; set; }
     public bool IsIngredient { get; set; }
     public float? Amount { get; set; }
     public string? AmountUnit { get; set; }

@@ -2,7 +2,8 @@
 
 public class IngredientCreationDto
 {
-    public string? Name { get; set; }
+	public int OrderNum { get; set; }
+	public string? Name { get; set; }
     public float? Amount { get; set; }
     public string? AmountUnit { get; set; }
 }

@@ -16,14 +16,14 @@ BEGIN
 	BEGIN
 		DECLARE @InsertedId TABLE (Id INT);
 
-		INSERT INTO Tag (Name)
+		INSERT INTO Tag (Name, IsIngredient)
 		OUTPUT inserted.Id INTO @InsertedId
-		VALUES (@name);
+		VALUES (@name, @isIngredient);
 
 		SELECT @tagId = Id FROM @InsertedId;
 	END
 
-	INSERT INTO RecipeTag (RecipeId, TagId, IsIngredient, Amount, AmountUnit)
+	INSERT INTO RecipeTag (RecipeId, TagId, Amount, AmountUnit)
 	VALUES (@recipeId, @tagId, @isIngredient, @amount, @amountUnit);
 
 	SELECT @tagId;

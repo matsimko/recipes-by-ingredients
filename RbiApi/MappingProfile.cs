@@ -13,8 +13,11 @@ public class MappingProfile : Profile
 		CreateMap<Recipe, RecipeDetailDto>().ReverseMap();
 
 		CreateMap<Tag, TagDto>().ReverseMap();
+		CreateMap<Tag, string>().ConvertUsing(t => t.Name);
+
 		CreateMap<Ingredient, IngredientDto>().ReverseMap();
 		CreateMap<Ingredient, IngredientCreationDto>().ReverseMap();
+		CreateMap<Ingredient, string>().ConvertUsing(t => t.Name);
 
 		CreateMap<User, UserDto>().ReverseMap();
 

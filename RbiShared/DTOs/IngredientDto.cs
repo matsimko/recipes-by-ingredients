@@ -2,8 +2,10 @@
 
 public class IngredientDto : TagDto
 {
+    public int OrderNum { get; set; }
     public float? Amount { get; set; }
     public string? AmountUnit { get; set; }
+
 
     public IngredientDto()
     {
@@ -13,5 +15,6 @@ public class IngredientDto : TagDto
     {
         Amount = i.Amount;
         AmountUnit = i.AmountUnit;
+        OrderNum = i.OrderNum;
     }
 }
