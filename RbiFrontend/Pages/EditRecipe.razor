@@ -4,27 +4,43 @@
 @inject NavigationManager _navigationManager;
 
 <EditForm Model="@Recipe" OnValidSubmit="@SaveRecipe">
-	<InputText @bind-Value=Recipe.Name class="form-control" />
-	<InputTextArea @bind-Value=Recipe.Description class="form-control" />
+	<div class="vstack gap-4">
+		<div class="hstack gap-3">
+			<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">Stop editing</button>
+			<button class="btn btn-primary btn-lg">Save</button>
+		</div>
 
-	<h2>Tags</h2>
-	<ListInput Ordered="false" Horizontal="true" Items="Recipe.Tags" Context="tag">
-		<ItemTemplate>
-			<InputText @bind-Value=tag.Name class="form-control"/>
-		</ItemTemplate>
-	</ListInput>
+		<InputText @bind-Value=Recipe.Name class="form-control" placeholder="Title" />
+		<InputTextArea @bind-Value=Recipe.Description class="form-control" placeholder="Description" />
 
-	<h2>Ingredients</h2>
-	<ListInput Items="Recipe.Ingredients" Context="ingredient">
-		<ItemTemplate>
-			<InputText @bind-Value=ingredient.Name class="form-control"/>
-			<InputNumber @bind-Value=ingredient.Amount class="form-control" />
-			<InputText @bind-Value=ingredient.AmountUnit class="form-control" />
-		</ItemTemplate>
-	</ListInput>
+		<div>
+			<h2>Tags</h2>
+			<ListInput Ordered="false" Horizontal="true" Items="Recipe.Tags" Context="tag">
+				<ItemTemplate>
+					<InputText @bind-Value=tag.Name class="form-control" />
+				</ItemTemplate>
+			</ListInput>
+		</div>
 
+		<div>
+			<h2>Ingredients</h2>
+			<ListInput Items="Recipe.Ingredients" Context="ingredient">
+				<ItemTemplate>
+					<InputText @bind-Value=ingredient.Name class="form-control" />
+					<InputNumber @bind-Value=ingredient.Amount class="form-control" />
+					<InputText @bind-Value=ingredient.AmountUnit class="form-control" />
+				</ItemTemplate>
+			</ListInput>
+		</div>
 
-	<button class="btn btn-primary">Save</button>
+		<div>
+			<div class="hstack gap-3">
+				<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">Stop editing</button>
+				<button class="btn btn-primary btn-lg">Save</button>
+			</div>
+			<div class="form-text">Unsaved changes will be lost on page refresh.</div>
+		</div>
+	</div>
 </EditForm>
 
 <div class="position-absolute bottom-0">
@@ -39,6 +55,9 @@
 @code {
 	[Parameter]
 	public RecipeDetailDto Recipe { get; set; } = null!; //always not null after OnInitialized
+
+	[Parameter]
+	public EventCallback OnStopEditing { get; set; }
 
 	private RecipeDetailDto _oldRecipe = null!;
 	private RecipeCreationDto _oldCreationDto = null!;
@@ -85,5 +104,11 @@
 			Recipe.PrepTimeMins,
 			Recipe.CookTimeMins,
 			Recipe.Servings);
+	}
+
+	private void StopEditing()
+	{
+
+		OnStopEditing.InvokeAsync();
 	}
 }

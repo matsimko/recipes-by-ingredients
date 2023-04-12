@@ -69,3 +69,7 @@ a, .btn-link {
 input:placeholder-shown {
     font-style: italic;
 }
+
+.servings {
+    max-width: 60px;
+}
