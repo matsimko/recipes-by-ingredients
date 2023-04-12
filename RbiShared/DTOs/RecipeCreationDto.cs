@@ -5,4 +5,5 @@ public record RecipeCreationDto(
 	bool IsPublic,
 	string? Description,
 	int? PrepTimeMins,
-	int? CookTimeMins);
+	int? CookTimeMins,
+	int? Servings);

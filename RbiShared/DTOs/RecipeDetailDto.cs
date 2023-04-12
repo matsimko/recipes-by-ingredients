@@ -9,6 +9,7 @@ public class RecipeDetailDto
     public string? Description { get; set; }
 	public int? PrepTimeMins { get; set; }
 	public int? CookTimeMins { get; set; }
+	public int? Servings { get; set; }
 	public DateTimeOffset CreationDate { get; set; }
     public List<TagDto> Tags { get; set; } = new();
     public List<IngredientDto> Ingredients { get; set; } = new();

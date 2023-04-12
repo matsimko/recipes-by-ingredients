@@ -16,6 +16,7 @@ public class Recipe
     public string? Description { get; set; }
     public int? PrepTimeMins { get; set; }
 	public int? CookTimeMins { get; set; }
+	public int? Servings { get; set; }
 	public DateTimeOffset CreationDate { get; set; }
 	public List<Tag> Tags { get; set; } = new List<Tag>();
     public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();

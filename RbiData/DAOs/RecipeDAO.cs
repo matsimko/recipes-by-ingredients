@@ -33,7 +33,10 @@ public class RecipeDao
                 recipe.Name,
                 recipe.Description,
                 recipe.IsPublic,
-                UserId = recipe.User.Id
+                UserId = recipe.User.Id,
+                recipe.PrepTimeMins,
+                recipe.CookTimeMins,
+                recipe.Servings
             },
             _mt.Transaction,
             commandType: CommandType.StoredProcedure);
@@ -114,6 +117,9 @@ public class RecipeDao
                recipe.Name,
                recipe.Description,
                recipe.IsPublic,
+               recipe.PrepTimeMins,
+               recipe.CookTimeMins,
+               recipe.Servings
            },
            _mt.Transaction,
            commandType: CommandType.StoredProcedure);
