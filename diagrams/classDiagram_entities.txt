@@ -5,6 +5,7 @@ left to right direction
     User "0..1" --> "*" Recipe
     Recipe "*" --> "*" Tag
     Recipe "1" *-- "*" Ingredient
+    Recipe "1" *-- "*" Instruction
     Tag <|- Ingredient
     
 
@@ -12,19 +13,28 @@ left to right direction
         -name
         -description
         -isPublic
+        -prepTimeMins
+        -cookTimeMins
+        -servings
         -creationDate
     }
+
     class Ingredient{
         -amount
+        -orderNum
     }
 
     class Tag{
         -name
     }
 
+    class Instruction{
+        -text
+        -orderNum
+    }
+
     class User{
         -id
         -username
-        -isAnonymous
     }
 @enduml

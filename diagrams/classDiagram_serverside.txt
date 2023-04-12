@@ -5,19 +5,28 @@ left to right direction
     IRecipeService <|. RecipeService
     IManagedTransaction <|. ManagedTransaction
     IManagedTransactionFactory <|. ManagedTransactionFactory
-    IDaoFactory <|. RecipeDaoFactory
+    IRecipeDaoFactory <|. RecipeDaoFactory
 
     RecipeDaoFactory ..> RecipeDao : instantiate
     ManagedTransactionFactory ..> ManagedTransaction : instantiate
     IManagedTransactionFactory ..> IManagedTransaction : instantiate
-    RecipeService --> IDaoFactory
-    RecipeService --> IManagedTransactionFactory
+    RecipeService --> IRecipeDaoFactory
+    RecipeService -> IManagedTransactionFactory
     RecipeController --> IRecipeService
+
+    ITagService <|. TagService
+    ITagDaoFactory <|. TagDaoFactory
+    TagDaoFactory ..> TagDao : instantiate
+    TagService --> ITagDaoFactory
+    IManagedTransactionFactory <- TagService
+    TagController --> ITagService
 
     class RecipeDao{
         +Insert(recipe)
         +AddTagToRecipe(tag, recipeId)
+        +AddInstructionToRecipe(instruction, recipeId)
         +RemoveTagFromRecipe(tagId, recipeId)
+        +RemoveInstructionFromRecipe(instructionId, recipeId)
         +Update(recipe)
         +Delete(id)
         +GetRecipe(id)
@@ -28,11 +37,9 @@ left to right direction
     class RecipeDaoFactory{
     }
 
-   class IDaoFactory<RecipeDao>{
+    class IRecipeDaoFactory{
         +Create(managedTransaction)
     }
-
-
 
     class ManagedTransaction{
     }
@@ -60,8 +67,10 @@ left to right direction
         +Insert(recipe, userId)
         +AddTagToRecipe(tag, recipeId, userId)
         +AddIngredientToRecipe(ingredient, recipeId, userId);
+        +AddInstructionToRecipe(instruction, recipeId, userId)
         +RemoveTagFromRecipe(tagId, recipeId, userId)
         +RemoveIngredientFromRecipe(ingredientId, recipeId, userId)
+        +RemoveInstructionFromRecipe(instructionId, recipeId, userId)
         +Update(recipe, userId)
         +Delete(id, userId)
         +GetRecipeDetail(id, userId?)
@@ -75,9 +84,36 @@ left to right direction
         +Post(creationDto)
         +AddTagToRecipe(id, name)
         +AddIngredientToRecipe(id, creationDto)
+        +AddInstructionToRecipe(id, dto)
         +Put(id, creationDto)
         +Delete(id)
         +RemoveTagFromRecipe(id, tagId)
-        +RemoveIngredientsFromRecipe(id, ingredientId)
+        +RemoveIngredientFromRecipe(id, ingredientId)
+        +RemoveInstructionFromRecipe(id, instructionId)
     }
+
+
+
+    class TagDao{
+        +SearchTags(prefix)
+    }
+
+    class TagDaoFactory{
+    }
+
+    class ITagDaoFactory{
+        +Create(managedTransaction)
+    }
+
+    class ITagService{
+        +SearchTags(prefix)
+    }
+
+    class TagService{
+    }
+
+    class TagController{
+        +Get(prefix)
+    }
+
 @enduml
