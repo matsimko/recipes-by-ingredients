@@ -2,6 +2,7 @@
 
 @inject RecipeSource _recipeSource
 @inject Auth _auth
+@inject UnitService _unitService
 
 <PageTitle>Recipe</PageTitle>
 
@@ -17,9 +18,17 @@ else
 {
 	<div class="vstack gap-4">
 		<div class="border p-3 border-3 rounded">
-			<div class="d-flex justify-content-between align-items-center">
-				<h1>@_recipe.Name</h1>
-				<div class="flex-grow-0 vstack gap-4">
+			<div class="d-flex justify-content-between">
+				<div class="vstack gap-2">
+					<h1>@_recipe.Name</h1>
+					<div class="hstack flex-wrap gap-2">
+						@foreach (var tag in _recipe.Tags)
+						{
+							<div>#@tag.Name</div>
+						}
+					</div>
+				</div>
+				<div class="flex-grow-0 vstack gap-3">
 					<div>
 						@if (_recipe.User != null)
 						{
@@ -34,15 +43,6 @@ else
 					}
 				</div>
 			</div>
-			<div>
-				@for (int i = 0; i < _recipe.Tags.Count; i++)
-				{
-				<span>#@_recipe.Tags[i].Name</span>
-				if (i < _recipe.Tags.Count - 1)
-				{
-				}
-				}
-			</div>
 			<div>@_recipe.Description</div>
 		</div>
 		@if (_recipe.Servings != null)
@@ -52,7 +52,7 @@ else
 				<strong>Servings:</strong>
 			</div>
 			<div class="col-auto">
-					<input type="number" class="form-control form-control-sm servings" @bind="_servings" />
+					<input type="number" min="1" class="form-control form-control-sm servings" @bind="_servings" />
 			</div>
 		</div>
 		}
@@ -62,11 +62,11 @@ else
 				<ul>
 					@foreach (var ingredient in _recipe.Ingredients)
 					{
-					<li>
-						@(ingredient.Amount * (_recipe.Servings != null ? _servings / (float) _recipe.Servings : 1))
-						@ingredient.AmountUnit
-						@ingredient.Name
-					</li>
+						var (amount, unit) = GetAmountForIngredient(ingredient);
+						<li>
+							@amount @unit 
+							@ingredient.Name
+						</li>
 					}
 				</ul>
 			</div>
@@ -95,7 +95,7 @@ else
 	[SupplyParameterFromQuery]
 	public bool Edit { get; set; }
 
-	private RecipeDetailDto? _recipe;
+	private RecipeDetailDto _recipe = null!;
 	private int _servings;
 
 	protected override async Task OnInitializedAsync()
@@ -115,5 +115,23 @@ else
 	private void StopEditing()
 	{
 		Edit = false;
+	}
+
+	private (float?, string?) GetAmountForIngredient(IngredientDto ingredient)
+	{
+		float? amount = ingredient.Amount;
+		string? unit = ingredient.AmountUnit;
+		if (amount != null)
+		{
+			if (_recipe.Servings != null)
+			{
+				amount *= _servings / (float)_recipe.Servings;
+			}
+			if (unit != null)
+			{
+				(amount, unit) = _unitService.GetSuitableAmount((float)amount, unit);
+			}
+		}
+		return (amount, unit);
 	}
 }

@@ -73,3 +73,12 @@ input:placeholder-shown {
 .servings {
     max-width: 60px;
 }
+
+.amount {
+    max-width: 100px;
+}
+
+.unit{
+    max-width: 120px;
+}
+

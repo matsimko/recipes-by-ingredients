@@ -2,11 +2,12 @@
 
 @inject RecipeSource _recipeSource
 @inject NavigationManager _navigationManager;
+@inject UnitService _unitService;
 
 <EditForm Model="@Recipe" OnValidSubmit="@SaveRecipe">
 	<div class="vstack gap-4">
 		<div class="hstack gap-3">
-			<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">Stop editing</button>
+			<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">View recipe</button>
 			<button class="btn btn-primary btn-lg">Save</button>
 		</div>
 
@@ -26,16 +27,26 @@
 			<h2>Ingredients</h2>
 			<ListInput Items="Recipe.Ingredients" Context="ingredient">
 				<ItemTemplate>
-					<InputText @bind-Value=ingredient.Name class="form-control" />
-					<InputNumber @bind-Value=ingredient.Amount class="form-control" />
-					<InputText @bind-Value=ingredient.AmountUnit class="form-control" />
+					<div class="row g-2">
+						<div class="col-auto"><InputText @bind-Value=ingredient.Name class="form-control" placeholder="Ingredient" /></div>
+						<div class="col-auto"><InputNumber @bind-Value=ingredient.Amount class="form-control amount" placeholder="Amount" /></div>
+						<div class="col-auto">
+							<InputSelect @bind-Value=ingredient.AmountUnit class="form-select unit" >
+								<option></option>
+								@foreach(var symbol in _unitService.AvailableUnitSymbols)
+								{
+								<option>@symbol</option>
+								}
+							</InputSelect>
+						</div>
+					</div>
 				</ItemTemplate>
 			</ListInput>
 		</div>
 
 		<div>
 			<div class="hstack gap-3">
-				<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">Stop editing</button>
+				<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">View recipe</button>
 				<button class="btn btn-primary btn-lg">Save</button>
 			</div>
 			<div class="form-text">Unsaved changes will be lost on page refresh.</div>
@@ -47,7 +58,7 @@
 	@for (int i = 0; i < _successCount; i++)
 	{
 		<div class="alert alert-success">
-			The recipe has been saved successfully.
+			Successfully saved the recipe.
 		</div>
 	}
 </div>

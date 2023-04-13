@@ -3,13 +3,7 @@ using System.Net.Http.Json;
 
 namespace RbiFrontend.ApiAccess;
 
-/// <summary>
-/// 
-/// </summary>
-/// <typeparam name="T">Regular DTO</typeparam>
-/// <typeparam name="U">Creation/update DTO</typeparam>
-/// <typeparam name="V">Detail DTO</typeparam>
-public abstract class AbstractSource<T, U, V>
+public abstract class AbstractSource<TDto, TCreationDto, TDetailDto>
 {
     protected readonly HttpClient _http;
     protected abstract string ResourceName { get; }
@@ -19,7 +13,7 @@ public abstract class AbstractSource<T, U, V>
         _http = http;
     }
 
-    public async Task<V> Get(long id)
+    public async Task<TDetailDto> Get(long id)
     {
         var response = await _http.GetAsync($"{ResourceName}/{id}");
         if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Forbidden)
@@ -27,27 +21,27 @@ public abstract class AbstractSource<T, U, V>
             var errorMessage = await response.Content.ReadFromJsonAsync<ErrorMessage>();
             throw new ClientErrorException(errorMessage?.Error);
         }
-        return await response.Content.ReadFromJsonAsync<V>();
+        return await response.Content.ReadFromJsonAsync<TDetailDto>();
     }
 
-    public Task<IEnumerable<T>> GetAll()
+    public Task<IEnumerable<TDto>> GetAll()
     {
-        return _http.GetFromJsonAsync<IEnumerable<T>>($"{ResourceName}");
+        return _http.GetFromJsonAsync<IEnumerable<TDto>>($"{ResourceName}");
     }
 
-    public Task<IEnumerable<T>> Search(object queryParams)
+    public Task<IEnumerable<TDto>> Search(object queryParams)
     {
         var queryString = UrlUtils.ObjectToQueryString(queryParams);
-        return _http.GetFromJsonAsync<IEnumerable<T>>($"{ResourceName}?{queryString}");
+        return _http.GetFromJsonAsync<IEnumerable<TDto>>($"{ResourceName}?{queryString}");
     }
 
-    public async Task<V> Insert(U dto)
+    public async Task<TDetailDto> Insert(TCreationDto dto)
     {
         var response = await _http.PostAsJsonAsync($"{ResourceName}", dto);
-        return await response.Content.ReadFromJsonAsync<V>();
+        return await response.Content.ReadFromJsonAsync<TDetailDto>();
     }
 
-    public Task Update(long id, U dto)
+    public Task Update(long id, TCreationDto dto)
     {
         return _http.PutAsJsonAsync($"{ResourceName}/{id}", dto);
     }
