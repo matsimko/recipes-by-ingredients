@@ -1,12 +1,16 @@
 ﻿@page "/recipes/{Id:long}/{Name?}"
 
 @inject RecipeSource _recipeSource
-@inject Auth _auth
+@inject UserService _userService
 @inject UnitService _unitService
 
 <PageTitle>Recipe</PageTitle>
 
-@if (_recipe == null)
+@if(_error != null)
+{
+	<ClientError Text="@_error" />
+}
+else if (_recipe == null)
 {
 	<Loading />
 }
@@ -27,16 +31,30 @@ else
 							<div>#@tag.Name</div>
 						}
 					</div>
+					@if(_recipe.CookTimeMins != null || _recipe.PrepTimeMins != null)
+					{	
+					<div class="hstack flex-wrap align-items-center">
+						<div><span class="oi oi-clock fs-5"></span></div>
+						@if (_recipe.PrepTimeMins != null)
+						{
+							<div class="ms-2">Prep: @_recipe.PrepTimeMins minutes</div>
+						}
+						@if(_recipe.CookTimeMins != null)
+						{
+							<div class="ms-4">Cook: @_recipe.CookTimeMins minutes</div>	
+						}
+					</div>
+					}
 				</div>
 				<div class="flex-grow-0 vstack gap-3">
 					<div>
 						@if (_recipe.User != null)
 						{
-						<div>Author: <a href="/user/@_recipe.User.Id">@_recipe.User.Username</a></div>
+						<div>Author: <a href="/users/@_recipe.User.Id">@_recipe.User.Username</a></div>
 						}
 						<div>@_recipe.CreationDate.ToDateString()</div>
 					</div>
-					@if (_recipe.User?.Id == _auth.User.Id)
+					@if (_userService.IsAuthenticated(_recipe.User))
 					{
 
 					<div><button @onclick=StartEditing class="btn btn-primary btn-lg">Edit</button></div>
@@ -57,7 +75,7 @@ else
 		</div>
 		}
 		<div class="row">
-			<div class="col-xl-5">
+			<div class="col-xl-4">
 				<h2>Ingredients</h2>
 				<ul>
 					@foreach (var ingredient in _recipe.Ingredients)
@@ -71,7 +89,7 @@ else
 				</ul>
 			</div>
 			<div class="col-xl-1"></div>
-			<div class="col-xl-6">
+			<div class="col-xl-7">
 				<h2>Instructions</h2>
 				<ol>
 					@foreach (var instruction in _recipe.Instructions)
@@ -98,12 +116,21 @@ else
 	private RecipeDetailDto _recipe = null!;
 	private int _servings;
 
+	private string? _error;
+
 	protected override async Task OnInitializedAsync()
 	{
-		_recipe = await _recipeSource.Get(Id);
-		if(_recipe.Servings != null)
+		try
 		{
-			_servings = (int) _recipe.Servings;
+			_recipe = await _recipeSource.Get(Id);
+			if (_recipe.Servings != null)
+			{
+				_servings = (int)_recipe.Servings;
+			}
+		}
+		catch (ClientErrorException ex)
+		{
+			_error = ex.Message;
 		}
 	}
 

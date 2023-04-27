@@ -34,4 +34,21 @@ public class RecipeDetailDto
         Ingredients = r.Ingredients.Select(i => new IngredientDto(i)).ToList();
         Instructions = r.Instructions.Select(i => new InstructionDto(i)).ToList();
 	}
+
+	public override bool Equals(object? obj)
+	{
+        return obj is RecipeDetailDto dto &&
+               Id == dto.Id &&
+               Name == dto.Name &&
+               IsPublic == dto.IsPublic &&
+               EqualityComparer<UserDto?>.Default.Equals(User, dto.User) &&
+               Description == dto.Description &&
+               PrepTimeMins == dto.PrepTimeMins &&
+               CookTimeMins == dto.CookTimeMins &&
+               Servings == dto.Servings &&
+               CreationDate.Equals(dto.CreationDate) &&
+               Enumerable.SequenceEqual(Tags, dto.Tags) &&
+               Enumerable.SequenceEqual(Ingredients, dto.Ingredients) &&
+               Enumerable.SequenceEqual(Instructions, dto.Instructions);
+	}
 }

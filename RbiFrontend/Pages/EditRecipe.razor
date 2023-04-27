@@ -9,10 +9,41 @@
 		<div class="hstack gap-3">
 			<button type="button" @onclick=StopEditing class="btn btn-lg btn-outline-secondary">View recipe</button>
 			<button class="btn btn-primary btn-lg">Save</button>
+			<button type="button" @onclick=Delete class="btn btn-outline-danger btn-lg">Delete</button>
 		</div>
 
-		<InputText @bind-Value=Recipe.Name class="form-control" placeholder="Title" />
-		<InputTextArea @bind-Value=Recipe.Description class="form-control" placeholder="Description" />
+		<div>
+			<label for="title" class="form-label">Title</label>
+			<InputText @bind-Value=Recipe.Name class="form-control" id="title" />
+		</div>
+
+		<div class="form-check">
+			<InputCheckbox @bind-Value=Recipe.IsPublic class="form-check-input" id="is-public" />
+			<label class="form-check-label" for="is-public">
+				Public (visible to other users)
+			</label>
+		</div>
+
+		<div>
+			<label for="desc" class="form-label">Description</label>
+			<InputTextArea @bind-Value=Recipe.Description class="form-control" id="desc" />
+		</div>
+
+		<div class="row g-4 align-item-center">
+			<div class="col-auto">
+				<label for="prep-time-mins" class="form-label">Prep time minutes</label>
+				<InputNumber @bind-Value=Recipe.PrepTimeMins class="form-control time-mins" id="prep-time-mins" />
+			</div>
+			<div class="col-auto">
+				<label for="cook-time-mins" class="form-label">Cook time minutes</label>
+				<InputNumber @bind-Value=Recipe.CookTimeMins class="form-control time-mins" id="cook-time-mins" />
+			</div>
+			<div class="col-auto">
+				<label for="servings" class="form-label">Servings</label>
+				<InputNumber @bind-Value=Recipe.Servings class="form-control servings" id="servings" />
+			</div>
+		</div>
+
 
 		<div>
 			<h2>Tags</h2>
@@ -35,11 +66,20 @@
 								<option></option>
 								@foreach (var symbol in _unitService.AvailableUnitSymbols)
 								{
-									<option>@symbol</option>
+								<option>@symbol</option>
 								}
 							</InputSelect>
 						</div>
 					</div>
+				</ItemTemplate>
+			</ListInput>
+		</div>
+
+		<div>
+			<h2>Instructions</h2>
+			<ListInput Items="Recipe.Instructions" Context="instruction" Stretch="true">
+				<ItemTemplate>
+					<InputTextArea @bind-Value=instruction.Text class="form-control" rows="4" />
 				</ItemTemplate>
 			</ListInput>
 		</div>
@@ -71,7 +111,6 @@
 	public EventCallback OnStopEditing { get; set; }
 
 	private RecipeDetailDto _oldRecipe = null!;
-	private RecipeCreationDto _oldCreationDto = null!;
 	private int _successCount = 0;
 
 	protected override void OnInitialized()
@@ -81,7 +120,6 @@
 			Recipe = new RecipeDetailDto { Name = "" };
 		}
 		_oldRecipe = new RecipeDetailDto(Recipe);
-		_oldCreationDto = ExtractCreationDto();
 	}
 
 	private async Task SaveRecipe()
@@ -92,13 +130,12 @@
 			Recipe = await _recipeSource.Insert(creationDto);
 			_navigationManager.NavigateTo($"/recipes/{Recipe.Id}");
 		}
-		else if (!creationDto.Equals(_oldCreationDto))
+		else if (!Recipe.Equals(_oldRecipe))
 		{
 			await _recipeSource.Update(Recipe.Id, creationDto);
 		}
 
 		_oldRecipe = new RecipeDetailDto(Recipe);
-		_oldCreationDto = creationDto;
 
 		_successCount++;
 		await Task.Delay(3000).ContinueWith((t) => _successCount--);
@@ -116,12 +153,22 @@
 			CookTimeMins = Recipe.CookTimeMins,
 			Servings = Recipe.Servings,
 			Tags = Recipe.Tags,
-			Ingredients = Recipe.Ingredients
+			Ingredients = Recipe.Ingredients,
+			Instructions = Recipe.Instructions
 		};
 	}
 
 	private void StopEditing()
 	{
 		OnStopEditing.InvokeAsync();
+	}
+
+	private async Task Delete()
+	{
+		if(Recipe.Id != 0)
+		{
+			await _recipeSource.Delete(Recipe.Id);
+			_navigationManager.NavigateTo("/my-recipes");
+		}
 	}
 }

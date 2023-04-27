@@ -1,36 +1,43 @@
 ﻿@typeparam TItem where TItem : new()
 
 <div>
-	<div class="d-inline-flex @(Horizontal ? "hstack flex-wrap" : "vstack") align-items-center gap-3">
-	@for (int i = 0; i < Items.Count(); i++)
-	{
-		var iCopy = i;
+	<div class="@(Stretch && Items.Any() ? "d-flex" : "d-inline-flex")
+			@(Horizontal ? "hstack flex-wrap" : "vstack") align-items-center gap-3">
+		@for (int i = 0; i < Items.Count(); i++)
+		{
+			var iCopy = i;
 
 			@if (Ordered)
 			{
-			<button @onclick="() => Add(iCopy)" type="button" class="btn btn-secondary"><span class="oi oi-plus"></span></button>
+				<button @onclick="() => Add(iCopy)" type="button" class="btn btn-secondary"><span class="oi oi-plus"></span></button>
 			}
 			<div class="hstack gap-2">
 				@if (Ordered)
 				{
-				<div class="btn-group-vertical">
-					<button class="btn btn-sm btn-outline-secondary" type="button"><span class="oi oi-caret-top"></span></button>
-					<button class="btn btn-sm btn-outline-secondary" type="button"><span class="oi oi-caret-bottom"></span></button>
-				</div>
+					<div class="btn-group-vertical">
+						<button disabled="@(iCopy == 0 ? true : false)"
+						@onclick="() => Move(iCopy, iCopy - 1)" class="btn btn-sm btn-outline-secondary" type="button">
+							<span class="oi oi-caret-top"></span>
+						</button>
+						<button disabled="@(iCopy == Items.Count - 1 ? true : false)"
+						@onclick="() => Move(iCopy, iCopy + 1)" class="btn btn-sm btn-outline-secondary" type="button">
+							<span class="oi oi-caret-bottom"></span>
+						</button>
+					</div>
 				}
 				@ItemTemplate(Items[i])
 				<div>
 					<button type="button" class="btn btn-outline-secondary"
-							@onclick="() => Remove(iCopy)">
+						@onclick="() => Remove(iCopy)">
 						<span class="oi oi-trash"></span>
 					</button>
 				</div>
 			</div>
-	}
-	<div>
-		<button @onclick=Add type="button" class="btn btn-secondary"><span class="oi oi-plus"></span> Add</button>
+		}
+		<div>
+			<button @onclick=Add type="button" class="btn btn-secondary"><span class="oi oi-plus"></span> Add</button>
+		</div>
 	</div>
-</div>
 </div>
 
 @code {
@@ -42,6 +49,9 @@
 
 	[Parameter]
 	public List<TItem> Items { get; set; } = null!;
+
+	[Parameter]
+	public bool Stretch { get; set; }
 
 	[Parameter]
 	public RenderFragment<TItem> ItemTemplate { get; set; } = null!;
@@ -56,5 +66,12 @@
 	private void Add(int i)
 	{
 		Items.Insert(i, new());
+	}
+
+	private void Move(int from, int to)
+	{
+		var item = Items[from];
+		Items.RemoveAt(from);
+		Items.Insert(to, item);
 	}
 }

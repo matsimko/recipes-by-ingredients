@@ -39,7 +39,7 @@ BEGIN
 	)
 	SELECT r.Id, Name, CreationDate,
 		UserId AS Id, Username,
-		TagId AS Id, TagName AS Name, IsIngredient /*, OrderNum, Amount, AmountUnit */
+		TagId AS Id, TagName AS Name, IsIngredient
 	FROM VI_RecipeWithTags r
 	JOIN BestRecipeMatches brm ON r.Id = brm.Id
 END

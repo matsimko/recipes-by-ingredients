@@ -1,0 +1,46 @@
+﻿@page "/my-recipes"
+@page "/users/{UserId:long}"
+
+@inject UserService _userService
+@inject RecipeSource _recipeSource
+
+
+<div class="vstack gap-4">
+	<div>
+		@if (_recipes == null)
+		{
+			<Loading />
+		}
+		else
+		{
+			<RecipeList Recipes=_recipes />
+		}
+	</div>
+</div>
+
+
+@code {
+	[Parameter]
+	public long UserId { get; set; }
+
+	private bool _isOwner;
+
+	private IEnumerable<RecipeDto> _recipes = null!;
+
+	protected async override Task OnInitializedAsync()
+	{
+		if(UserId == 0)
+		{
+			_userService.RequireAuthentication();
+			UserId = _userService.User.Id;
+		}
+		_isOwner = _userService.IsAuthenticated(UserId);
+
+		_recipes = await _recipeSource.Search(new RecipeSearch
+		{
+			UserId = UserId,
+			IncludePrivateRecipesOfUser = _isOwner,
+		});
+
+	}
+}

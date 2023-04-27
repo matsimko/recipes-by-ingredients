@@ -126,8 +126,6 @@ public class RecipeDao
 
     private async Task<IEnumerable<Recipe>> QueryRecipesAsync(string storedProcedure, object parameters)
     {
-        //as there is only Tag and Ingredient in the hierarchy,
-        //I don't have to do a custom hierarchy parsing with a reader
         var result = await _mt.Connection.QueryAsync<Recipe, User?, Tag?, IngredientInfo?, Recipe>(
            storedProcedure,
            (r, u, t, ii) =>

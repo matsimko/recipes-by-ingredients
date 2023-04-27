@@ -1,71 +1,67 @@
-﻿
+﻿@page "/recipes"
+
 @inject RecipeSource _recipeSource
-@inject Auth _auth
+@inject UserService _userService
 
-@if (_errorText != null)
-{
-	<ClientError Text=@_errorText />
-}
-else
-{
-	<div class="vstack gap-4">
-		<div>
-			<div class="btn-group">
-				<input @onchange="() => _searchBy = SearchBy.Tags" type="radio" class="btn-check" name="search-by" id="search-by-tags-radio" checked>
-				<label class="btn btn-outline-primary" for="search-by-tags-radio">Search by ingredients or tags</label>
 
-				<input @onchange="() => _searchBy = SearchBy.Name" type="radio" class="btn-check" name="search-by" id="search-by-name-radio">
-				<label class="btn btn-outline-primary" for="search-by-name-radio">Search by title</label>
-			</div>
-		</div>
-		<div class="vstack gap-3">
-			@if (_searchBy == SearchBy.Tags)
-			{
-				<TagSearchInput Tags=_recipeSearch.TagNames />
-			}
-			else
-			{
-				<div class="row">
-					<div class="col-auto">
-						<input @bind=_recipeSearch.Name class="form-control" placeholder="Title" />
-					</div>
-				</div>
-			}
-			<div class="vstack g-2">
-				@if(_searchBy == SearchBy.Tags)
-				{
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="exact-match"
-					   @bind=_recipeSearch.ExactMatch>
-						<label class="form-check-label" for="exact-match">
-							Include only recipes which match <em>all</em> ingredients/tags
-						</label>
-					</div>
-				}
-				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="include-public"
-						@bind=_recipeSearch.IncludePublicRecipes>
-					<label class="form-check-label" for="include-public">
-						Include public recipes
-					</label>
-				</div>
-			</div>
-			<div>
-				<button class="btn btn-primary" @onclick=Search>Search</button>
-			</div>
-		</div>
-		<div>
-			@if (_loading)
-			{
-				<Loading />
-			}
-			else if (_results != null)
-			{
-				<RecipeList Recipes=_results />
-			}
+<div class="vstack gap-4">
+	<div>
+		<div class="btn-group">
+			<input @onchange="() => _searchBy = SearchBy.Tags" type="radio" class="btn-check" name="search-by" id="search-by-tags-radio" checked>
+			<label class="btn btn-outline-primary" for="search-by-tags-radio">Search by ingredients or tags</label>
+
+			<input @onchange="() => _searchBy = SearchBy.Name" type="radio" class="btn-check" name="search-by" id="search-by-name-radio">
+			<label class="btn btn-outline-primary" for="search-by-name-radio">Search by title</label>
 		</div>
 	</div>
-}
+	<div class="vstack gap-3">
+		@if (_searchBy == SearchBy.Tags)
+		{
+			<TagSearchInput Tags=_recipeSearch.TagNames />
+		}
+		else
+		{
+			<div class="row">
+				<div class="col-auto">
+					<input @bind=_recipeSearch.Name class="form-control" placeholder="Title" />
+				</div>
+			</div>
+		}
+		<div class="vstack g-2">
+			@if(_searchBy == SearchBy.Tags)
+			{
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="exact-match"
+					@bind=_recipeSearch.ExactMatch>
+					<label class="form-check-label" for="exact-match">
+						Include only recipes which match <em>all</em> ingredients/tags
+					</label>
+				</div>
+			}
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" id="include-public"
+					@bind=_recipeSearch.IncludePublicRecipes>
+				<label class="form-check-label" for="include-public">
+					Include public recipes
+				</label>
+			</div>
+		</div>
+		<div>
+			<button class="btn btn-primary" @onclick=Search>Search</button>
+		</div>
+	</div>
+	<div>
+		@if (_results == null)
+		{
+			<Loading />
+		}
+		else
+		{
+			<RecipeList Recipes=_results />
+		}
+	</div>
+</div>
+
 
 
 
@@ -78,18 +74,17 @@ else
 	}
 
 	private SearchBy _searchBy = SearchBy.Tags;
-	private IEnumerable<RecipeDto>? _results = null;
+	private IEnumerable<RecipeDto>? _results = new List<RecipeDto>();
 
 	private RecipeSearch _recipeSearch = CreateRecipeSearch();
 
 	private bool _loading = false;
-	private string? _errorText = null;
 
 	private async Task Search()
 	{
 		var rs = new RecipeSearch
 		{
-			UserId = _auth.User.Id,
+			UserId = _userService.User?.Id,
 			IncludePrivateRecipesOfUser = true,
 			IncludePublicRecipes = _recipeSearch.IncludePublicRecipes,
 			ExactMatch = _recipeSearch.ExactMatch
@@ -105,9 +100,8 @@ else
 			rs.Name = _recipeSearch.Name;
 		}
 
-		_loading = true;
+		_results = null;
 		_results = await _recipeSource.Search(rs);
-		_loading = false;
 	}
 
 	private static RecipeSearch CreateRecipeSearch()

@@ -10,17 +10,5 @@ public class RecipeCreationDto
 	public int? Servings { get; set; }
 	public List<TagDto> Tags { get; set; } = null!;
 	public List<IngredientDto> Ingredients { get; set; } = null!;
-
-	public override bool Equals(object? obj)
-	{
-		return obj is RecipeCreationDto dto &&
-			   Name == dto.Name &&
-			   IsPublic == dto.IsPublic &&
-			   Description == dto.Description &&
-			   PrepTimeMins == dto.PrepTimeMins &&
-			   CookTimeMins == dto.CookTimeMins &&
-			   Servings == dto.Servings &&
-			   Enumerable.SequenceEqual(Tags, dto.Tags) &&
-			   Enumerable.SequenceEqual(Ingredients, dto.Ingredients);
-	}
+	public List<InstructionDto> Instructions{ get; set; } = null!;
 }

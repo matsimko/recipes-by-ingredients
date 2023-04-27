@@ -36,8 +36,10 @@ BEGIN
 
 	SELECT r.Id, Name, IsPublic, CreationDate,
 		UserId AS Id, Username,
-		TagId AS Id, TagName AS Name, IsIngredient /*, OrderNum, Amount, AmountUnit*/
+		TagId AS Id, TagName AS Name, IsIngredient
 	FROM VI_RecipeWithTags r
+	WHERE 1 = dbo.udf_ShouldRecipeBeInResult(
+			r.IsPublic, r.UserId, @userId, @includePublicRecipes, @includePrivateRecipesOfUser)
 	ORDER BY CreationDate
 	OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
 	RETURN;

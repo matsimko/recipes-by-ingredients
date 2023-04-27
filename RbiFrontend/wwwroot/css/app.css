@@ -74,7 +74,7 @@ input:placeholder-shown {
     max-width: 60px;
 }
 
-.amount {
+.amount, .time-mins {
     max-width: 100px;
 }
 
