@@ -2,7 +2,7 @@
 
 public class TagDto
 {
-    public long Id { get; set; }
+    //public long Id { get; set; }
     public string? Name { get; set; }
 
     public TagDto()
@@ -11,7 +11,7 @@ public class TagDto
 
     public TagDto(TagDto t)
     {
-        Id = t.Id;
+        //Id = t.Id;
         Name = t.Name;
     }
 }

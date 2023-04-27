@@ -23,10 +23,6 @@ left to right direction
 
     class RecipeDao{
         +Insert(recipe)
-        +AddTagToRecipe(tag, recipeId)
-        +AddInstructionToRecipe(instruction, recipeId)
-        +RemoveTagFromRecipe(tagId, recipeId)
-        +RemoveInstructionFromRecipe(instructionId, recipeId)
         +Update(recipe)
         +Delete(id)
         +GetRecipe(id)
@@ -65,12 +61,6 @@ left to right direction
 
     class IRecipeService{
         +Insert(recipe, userId)
-        +AddTagToRecipe(tag, recipeId, userId)
-        +AddIngredientToRecipe(ingredient, recipeId, userId);
-        +AddInstructionToRecipe(instruction, recipeId, userId)
-        +RemoveTagFromRecipe(tagId, recipeId, userId)
-        +RemoveIngredientFromRecipe(ingredientId, recipeId, userId)
-        +RemoveInstructionFromRecipe(instructionId, recipeId, userId)
         +Update(recipe, userId)
         +Delete(id, userId)
         +GetRecipeDetail(id, userId?)
@@ -82,14 +72,8 @@ left to right direction
         +Get(recipeSearch?)
         +Get(id)
         +Post(creationDto)
-        +AddTagToRecipe(id, name)
-        +AddIngredientToRecipe(id, creationDto)
-        +AddInstructionToRecipe(id, dto)
         +Put(id, creationDto)
         +Delete(id)
-        +RemoveTagFromRecipe(id, tagId)
-        +RemoveIngredientFromRecipe(id, ingredientId)
-        +RemoveInstructionFromRecipe(id, instructionId)
     }
 
 

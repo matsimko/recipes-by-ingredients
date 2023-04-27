@@ -58,6 +58,7 @@
     <Folder Include="StoredProcedures" />
     <Folder Include="Functions" />
     <Folder Include="Views" />
+    <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\User.sql" />
@@ -65,8 +66,7 @@
     <Build Include="Tables\Tag.sql" />
     <Build Include="Tables\RecipeTag.sql" />
     <Build Include="StoredProcedures\sp_SearchRecipesByTags.sql" />
-    <Build Include="StoredProcedures\sp_AddTagToRecipe.sql" />
-    <Build Include="StoredProcedures\sp_RemoveTagFromRecipe.sql" />
+    <Build Include="StoredProcedures\sp_SetTagsOfRecipe.sql" />
     <Build Include="StoredProcedures\sp_InsertRecipe.sql" />
     <Build Include="StoredProcedures\sp_DeleteRecipe.sql" />
     <Build Include="StoredProcedures\sp_UpdateRecipe.sql" />
@@ -78,14 +78,18 @@
     <Build Include="StoredProcedures\sp_SearchRecipes.sql" />
     <Build Include="StoredProcedures\sp_SearchTags.sql" />
     <Build Include="Tables\Instruction.sql" />
-    <Build Include="StoredProcedures\sp_AddInstructionToRecipe.sql" />
-    <Build Include="StoredProcedures\sp_RemoveInstructionFromRecipe.sql" />
+    <Build Include="StoredProcedures\sp_SetInstructionsOfRecipe.sql" />
     <Build Include="StoredProcedures\sp_GetInstructionsForRecipe.sql" />
+    <Build Include="Types\TagType.sql" />
+    <Build Include="Types\InstructionType.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RbiDb.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="RbiDb.refactorlog" />
   </ItemGroup>
 </Project>

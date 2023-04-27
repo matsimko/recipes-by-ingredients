@@ -6,5 +6,6 @@ BEGIN
 		UserId AS Id, Username,
 		TagId AS Id, TagName AS Name, IsIngredient, OrderNum, Amount, AmountUnit
 	FROM VI_RecipeWithTags
-	WHERE Id = @id;
+	WHERE Id = @id
+	ORDER BY OrderNum;
 END

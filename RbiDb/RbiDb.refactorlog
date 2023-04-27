@@ -21,4 +21,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="ShouldRecipeBeInResult" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="947cc1d6-d7dc-4109-906c-6003502b0660" ChangeDateTime="04/27/2023 16:44:48">
+    <Property Name="ElementName" Value="[dbo].[UserDefinedTableType1]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IngredientType]" />
+  </Operation>
 </Operations>

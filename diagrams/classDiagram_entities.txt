@@ -21,7 +21,6 @@ left to right direction
 
     class Ingredient{
         -amount
-        -orderNum
     }
 
     class Tag{
@@ -30,7 +29,6 @@ left to right direction
 
     class Instruction{
         -text
-        -orderNum
     }
 
     class User{

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 namespace RbiApi.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 public class RecipesController : ControllerBase
@@ -60,29 +61,6 @@ public class RecipesController : ControllerBase
         return _mapper.Map<RecipeDetailDto>(recipe);
     }
 
-    [HttpPost("{id}/Tags")]
-    public async Task<TagDto> AddTagToRecipe(long id, [FromBody] string name)
-    {
-        var tag = await _recipeService.AddTagToRecipe(new Tag { Name = name }, id, _userService.GetCurrentUserId());
-        return _mapper.Map<TagDto>(tag);
-    }
-
-    [HttpPost("{id}/Ingredients")]
-    public async Task<IngredientDto> AddIngredientToRecipe(long id, IngredientCreationDto dto)
-    {
-        var ingredient = _mapper.Map<Ingredient>(dto);
-        ingredient = await _recipeService.AddIngredientToRecipe(ingredient, id, _userService.GetCurrentUserId());
-        return _mapper.Map<IngredientDto>(ingredient);
-    }
-
-	[HttpPost("{id}/Instructions")]
-	public async Task<InstructionDto> AddInstructionToRecipe(long id, InstructionDto dto)
-	{
-        var instruction = _mapper.Map<Instruction>(dto);
-		instruction = await _recipeService.AddInstructionToRecipe(instruction, id, _userService.GetCurrentUserId());
-		return _mapper.Map<InstructionDto>(instruction);
-	}
-
 	[HttpPut("{id}")]
     public Task Put(int id, RecipeCreationDto dto)
     {
@@ -96,17 +74,4 @@ public class RecipesController : ControllerBase
     {
         return _recipeService.Delete(id, _userService.GetCurrentUserId());
     }
-
-    [HttpDelete("{id}/Tags/{tagId}")]
-    public Task RemoveTagFromRecipe(long id, long tagId)
-    {
-        return _recipeService.RemoveTagFromRecipe(tagId, id, _userService.GetCurrentUserId());
-    }
-
-    [HttpDelete("{id}/Ingredients/{ingredientId}")]
-    public Task RemoveIngredientsFromRecipe(long id, long ingredientId)
-    {
-        return _recipeService.RemoveIngredientFromRecipe(ingredientId, id, _userService.GetCurrentUserId());
-    }
-
 }

@@ -31,11 +31,11 @@
 						<div class="col-auto"><InputText @bind-Value=ingredient.Name class="form-control" placeholder="Ingredient" /></div>
 						<div class="col-auto"><InputNumber @bind-Value=ingredient.Amount class="form-control amount" placeholder="Amount" /></div>
 						<div class="col-auto">
-							<InputSelect @bind-Value=ingredient.AmountUnit class="form-select unit" >
+							<InputSelect @bind-Value=ingredient.AmountUnit class="form-select unit">
 								<option></option>
-								@foreach(var symbol in _unitService.AvailableUnitSymbols)
+								@foreach (var symbol in _unitService.AvailableUnitSymbols)
 								{
-								<option>@symbol</option>
+									<option>@symbol</option>
 								}
 							</InputSelect>
 						</div>
@@ -76,7 +76,7 @@
 
 	protected override void OnInitialized()
 	{
-		if(Recipe == null)
+		if (Recipe == null)
 		{
 			Recipe = new RecipeDetailDto { Name = "" };
 		}
@@ -87,17 +87,15 @@
 	private async Task SaveRecipe()
 	{
 		var creationDto = ExtractCreationDto();
-		if(Recipe.Id == 0)
+		if (Recipe.Id == 0)
 		{
 			Recipe = await _recipeSource.Insert(creationDto);
 			_navigationManager.NavigateTo($"/recipes/{Recipe.Id}");
 		}
-		else if(creationDto != _oldCreationDto)
+		else if (!creationDto.Equals(_oldCreationDto))
 		{
 			await _recipeSource.Update(Recipe.Id, creationDto);
 		}
-
-		//tags, ingredients, instructions
 
 		_oldRecipe = new RecipeDetailDto(Recipe);
 		_oldCreationDto = creationDto;
@@ -108,18 +106,22 @@
 
 	private RecipeCreationDto ExtractCreationDto()
 	{
-		return new RecipeCreationDto(
-			Recipe.Name,
-			Recipe.IsPublic,
-			Recipe.Description,
-			Recipe.PrepTimeMins,
-			Recipe.CookTimeMins,
-			Recipe.Servings);
+		//AutoMapper could be used
+		return new RecipeCreationDto()
+		{
+			Name = Recipe.Name,
+			IsPublic = Recipe.IsPublic,
+			Description = Recipe.Description,
+			PrepTimeMins = Recipe.PrepTimeMins,
+			CookTimeMins = Recipe.CookTimeMins,
+			Servings = Recipe.Servings,
+			Tags = Recipe.Tags,
+			Ingredients = Recipe.Ingredients
+		};
 	}
 
 	private void StopEditing()
 	{
-
 		OnStopEditing.InvokeAsync();
 	}
 }

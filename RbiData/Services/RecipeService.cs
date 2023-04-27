@@ -41,56 +41,6 @@ public class RecipeService : IRecipeService
 		return recipe;
 	}
 
-	public async Task<Tag> AddTagToRecipe(Tag tag, long recipeId, long userId)
-	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(recipeId, userId, recipeDao);
-		tag.Id = await recipeDao.AddTagToRecipe(tag, recipeId);
-		transaction.Commit();
-		return tag;
-	}
-
-	public async Task<Ingredient> AddIngredientToRecipe(Ingredient ingredient, long recipeId, long userId)
-	{
-		//do ingredient-specific validation here
-
-		return (Ingredient)await AddTagToRecipe(ingredient, recipeId, userId);
-	}
-
-	public async Task<Instruction> AddInstructionToRecipe(Instruction instruction, long recipeId, long userId)
-	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(recipeId, userId, recipeDao);
-		await recipeDao.AddInstructionToRecipe(instruction, recipeId);
-		transaction.Commit();
-		return instruction;
-	}
-
-	public async Task RemoveTagFromRecipe(long tagId, long recipeId, long userId)
-	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(recipeId, userId, recipeDao);
-		await recipeDao.RemoveTagFromRecipe(tagId, recipeId);
-		transaction.Commit();
-	}
-
-	public Task RemoveIngredientFromRecipe(long ingredientId, long recipeId, long userId)
-	{
-		return RemoveTagFromRecipe(ingredientId, recipeId, userId);
-	}
-
-	public async Task RemoveInstructionFromRecipe(long instructionId, long recipeId, long userId)
-	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(recipeId, userId, recipeDao);
-		await recipeDao.RemoveInstructionFromRecipe(instructionId, recipeId);
-		transaction.Commit();
-	}
-
 	public async Task Update(Recipe recipe, long userId)
 	{
 		using var transaction = _transactionFactory.Create();

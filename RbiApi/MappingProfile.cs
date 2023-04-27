@@ -16,7 +16,6 @@ public class MappingProfile : Profile
 		CreateMap<Tag, string>().ConvertUsing(t => t.Name);
 
 		CreateMap<Ingredient, IngredientDto>().ReverseMap();
-		CreateMap<Ingredient, IngredientCreationDto>().ReverseMap();
 		CreateMap<Ingredient, string>().ConvertUsing(t => t.Name);
 
 		CreateMap<User, UserDto>().ReverseMap();

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Dapper.SqlMapper;
 
 namespace RbiData.DAOs;
 
@@ -36,91 +37,30 @@ public class RecipeDao
                 UserId = recipe.User.Id,
                 recipe.PrepTimeMins,
                 recipe.CookTimeMins,
-                recipe.Servings
-            },
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
-    }
-
-    public Task<long> AddTagToRecipe(Tag tag, long recipeId)
-    {
-        var parameters = new DynamicParameters(new
-        {
-            Name = tag.Name,
-            recipeId
-        });
-        if (tag is Ingredient ingredient)
-        {
-            parameters.Add("IsIngredient", true);
-			parameters.Add("OrderNum", ingredient.OrderNum);
-			parameters.Add("Amount", ingredient.Amount);
-            parameters.Add("AmountUnit", ingredient.AmountUnit);
-        }
-
-        return _mt.Connection.QuerySingleAsync<long>(
-            "sp_AddTagToRecipe",
-            parameters,
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
-
-    }
-
-	public Task AddInstructionToRecipe(Instruction instruction, long recipeId)
-	{
-        var parameters = new
-        {
-            recipeId,
-            instruction.OrderNum,
-            instruction.Text
-        };
-
-		return _mt.Connection.ExecuteAsync(
-			"sp_AddInstructionToRecipe",
-			parameters,
-			_mt.Transaction,
-			commandType: CommandType.StoredProcedure);
-	}
-
-	public Task RemoveTagFromRecipe(long tagId, long recipeId)
-    {
-        return _mt.Connection.ExecuteAsync(
-            "sp_RemoveTagFromRecipe",
-            new
-            {
-                tagId,
-                recipeId,
-            },
-            _mt.Transaction,
-            commandType: CommandType.StoredProcedure);
-    }
-
-	public Task RemoveInstructionFromRecipe(long orderNum, long recipeId)
-	{
-		return _mt.Connection.ExecuteAsync(
-			"sp_RemoveInstructionFromRecipe",
-			new
-			{
-				orderNum,
-				recipeId,
+                recipe.Servings,
+				Instructions = GetInstructionsAsTVP(recipe),
+				Tags = GetTagsAsTVP(recipe)
 			},
-			_mt.Transaction,
-			commandType: CommandType.StoredProcedure);
-	}
+            _mt.Transaction,
+            commandType: CommandType.StoredProcedure);
+    }
 
 	public Task Update(Recipe recipe)
     {
-        return _mt.Connection.ExecuteAsync(
+		return _mt.Connection.ExecuteAsync(
            "sp_UpdateRecipe",
            new
            {
-               recipe.Id,
-               recipe.Name,
-               recipe.Description,
-               recipe.IsPublic,
-               recipe.PrepTimeMins,
-               recipe.CookTimeMins,
-               recipe.Servings
-           },
+			   recipe.Id,
+			   recipe.Name,
+			   recipe.Description,
+			   recipe.IsPublic,
+			   recipe.PrepTimeMins,
+			   recipe.CookTimeMins,
+			   recipe.Servings,
+			   Instructions = GetInstructionsAsTVP(recipe),
+			   Tags = GetTagsAsTVP(recipe)
+		   },
            _mt.Transaction,
            commandType: CommandType.StoredProcedure);
     }
@@ -154,6 +94,9 @@ public class RecipeDao
     {
         var result = await QueryRecipesAsync("sp_GetRecipeDetail", new { id });
         var recipe = result.FirstOrDefault();
+
+        if(recipe == null) return null;
+
         var instructions = await _mt.Connection.QueryAsync<Instruction>(
 			"sp_GetInstructionsForRecipe",
 			new { RecipeId = id },
@@ -197,9 +140,7 @@ public class RecipeDao
                {
                    var ingredient = new Ingredient
                    {
-                       Id = t.Id,
                        Name = t.Name,
-                       OrderNum = ii.OrderNum,
                        Amount = ii.Amount,
                        AmountUnit = ii.AmountUnit
                    };
@@ -229,12 +170,46 @@ public class RecipeDao
             return groupedRecipe;
         });
     }
+
+    private ICustomQueryParameter GetTagsAsTVP(Recipe recipe)
+    {
+		var tags = new List<TagType>();
+		tags.AddRange(recipe.Tags.Select(t => new TagType { Name = t.Name }));
+		tags.AddRange(recipe.Ingredients.Select((t, i) => new TagType
+        {
+            Name = t.Name,
+            IsIngredient = true,
+            OrderNum = i,
+            Amount = t.Amount,
+            AmountUnit = t.AmountUnit,
+        }));
+        return tags.ToDataTable().AsTableValuedParameter("TagType");
+	}
+
+	private ICustomQueryParameter GetInstructionsAsTVP(Recipe recipe)
+	{
+        return recipe.Instructions
+            .Select((instruction, index) => new 
+            {
+                OrderNum = index, 
+                instruction.Text,
+            }).ToList()
+            .ToDataTable().AsTableValuedParameter("InstructionType");
+	}
 }
 
 internal class IngredientInfo
 {
-    public int OrderNum { get; set; }
     public bool IsIngredient { get; set; }
+    public float? Amount { get; set; }
+    public string? AmountUnit { get; set; }
+}
+
+internal class TagType
+{
+    public string Name { get; set; } = null!;
+    public bool IsIngredient { get; set; }
+    public int? OrderNum { get; set; }
     public float? Amount { get; set; }
     public string? AmountUnit { get; set; }
 }
