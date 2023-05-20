@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RbiData.Entities;
+using RbiData.Transactions;
 using RbiShared.SearchObjects;
 using System;
 using System.Collections.Generic;

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using RbiData.DAOs;
 using RbiData.Entities;
+using RbiData.Transactions;
 using RbiShared.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -14,23 +15,20 @@ using System.Threading.Tasks;
 namespace RbiData.Services;
 public class TagService : ITagService
 {
-	private readonly IManagedTransactionFactory _transactionFactory;
-	private readonly IDaoFactory<TagDao> _tagDaoFactory;
+	private readonly TransactionExecutor<TagDao> _transactionExecuter;
 
 	public TagService(
 		IManagedTransactionFactory transactionFactory,
-		IDaoFactory<TagDao> tagDao)
+		IDaoFactory<TagDao> tagDaoFactory)
 	{
-		_transactionFactory = transactionFactory;
-		_tagDaoFactory = tagDao;
+		_transactionExecuter = new(transactionFactory, tagDaoFactory);
 	}
 
-	public async Task<IEnumerable<Tag>> SearchTags(string prefix)
+	public Task<IEnumerable<Tag>> SearchTags(string prefix)
 	{
-		using var transaction = _transactionFactory.Create();
-		var tagDao = _tagDaoFactory.Create(transaction);
-		var tags = await tagDao.SearchTags(prefix);
-		transaction.Commit();
-		return tags;
+		return _transactionExecuter.Execute(tagDao =>
+		{
+			return tagDao.SearchTags(prefix);
+		});
 	}
 }

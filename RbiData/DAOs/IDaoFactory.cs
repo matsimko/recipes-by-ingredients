@@ -1,4 +1,6 @@
-﻿namespace RbiData.DAOs;
+﻿using RbiData.Transactions;
+
+namespace RbiData.DAOs;
 
 public interface IDaoFactory<T>
 {

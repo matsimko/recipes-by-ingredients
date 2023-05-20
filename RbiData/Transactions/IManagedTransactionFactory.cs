@@ -1,4 +1,4 @@
-﻿namespace RbiData;
+﻿namespace RbiData.Transactions;
 
 public interface IManagedTransactionFactory
 {

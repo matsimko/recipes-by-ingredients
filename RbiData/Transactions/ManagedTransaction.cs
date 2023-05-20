@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace RbiData;
+namespace RbiData.Transactions;
 
 /// <summary>
 /// This class is designed to allow a single transaction within a single connection.

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using RbiApi;
-using RbiData;
 using RbiData.DAOs;
 using RbiData.Entities;
 using RbiData.Services;
+using RbiData.Transactions;
 using RbiShared.DTOs;
 using System.Net;
 

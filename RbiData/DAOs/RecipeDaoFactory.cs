@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RbiData.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

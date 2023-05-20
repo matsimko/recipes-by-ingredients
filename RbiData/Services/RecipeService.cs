@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using RbiData.DAOs;
 using RbiData.Entities;
+using RbiData.Transactions;
 using RbiShared.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -10,82 +11,80 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace RbiData.Services;
 public class RecipeService : IRecipeService
 {
-	private readonly IManagedTransactionFactory _transactionFactory;
-	private readonly IDaoFactory<RecipeDao> _recipeDaoFactory;
 	private readonly ILogger<RecipeService> _logger;
+    private readonly TransactionExecutor<RecipeDao> _transactionExecuter;
 
-	public RecipeService(
+    public RecipeService(
 		IManagedTransactionFactory transactionFactory,
 		IDaoFactory<RecipeDao> recipeDaoFactory,
 		ILogger<RecipeService> logger)
 	{
-		_transactionFactory = transactionFactory;
-		_recipeDaoFactory = recipeDaoFactory;
 		_logger = logger;
+
+		_transactionExecuter = new(transactionFactory, recipeDaoFactory);
 	}
 
-	public async Task<Recipe> Insert(Recipe recipe, long userId)
+	public Task<Recipe> Insert(Recipe recipe, long userId)
 	{
 		recipe.User = new User { Id = userId };
 
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-
-		var id = await recipeDao.Insert(recipe);
-		recipe = await recipeDao.GetRecipeDetail(id); //could be done in one db round-trip
-		transaction.Commit();
-		return recipe;
+		return _transactionExecuter.Execute<Recipe>(async recipeDao =>
+		{
+			var id = await recipeDao.Insert(recipe);
+			recipe = await recipeDao.GetRecipeDetail(id); //could be done in one db round-trip
+			return recipe;
+		});
 	}
 
-	public async Task Update(Recipe recipe, long userId)
+	public Task Update(Recipe recipe, long userId)
 	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(recipe.Id, userId, recipeDao);
-		await recipeDao.Update(recipe);
-		transaction.Commit();
+		return _transactionExecuter.Execute(async recipeDao =>
+		{
+			await CheckIfCanModify(recipe.Id, userId, recipeDao);
+			await recipeDao.Update(recipe);
+		});
 	}
 
-	public async Task Delete(long id, long userId)
+	public Task Delete(long id, long userId)
 	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		await CheckIfCanModify(id, userId, recipeDao);
-		await recipeDao.Delete(id);
-		transaction.Commit();
+		return _transactionExecuter.Execute(async recipeDao =>
+		{
+            await CheckIfCanModify(id, userId, recipeDao);
+            await recipeDao.Delete(id);
+        });
 	}
 
 	public async Task<Recipe> GetRecipeDetail(long id, long? userId = null)
 	{
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		var recipe = await recipeDao.GetRecipeDetail(id);
-		transaction.Commit();
-		if (recipe == null) throw new EntityNotFoundException("Recipe", id);
-		if (!recipe.IsPublic && (recipe.User?.Id != userId || userId == null))
+		var recipe = await _transactionExecuter.Execute(recipeDao =>
 		{
-			throw new OwnershipException();
-		}
+			return recipeDao.GetRecipeDetail(id);
+		});
 
-		return recipe;
+        if (recipe == null) throw new EntityNotFoundException("Recipe", id);
+        if (!recipe.IsPublic && (recipe.User?.Id != userId || userId == null))
+        {
+            throw new OwnershipException();
+        }
+        return recipe;
 	}
 
-	public async Task<IEnumerable<Recipe>> SearchRecipes(RecipeSearch rs, long? userId = null)
+	public Task<IEnumerable<Recipe>> SearchRecipes(RecipeSearch rs, long? userId = null)
 	{
 		if (rs.UserId != null && rs.UserId != userId && rs.IncludePrivateRecipesOfUser)
 		{
 			throw new OwnershipException("User cannot access private recipes of other user");
 		}
 
-		using var transaction = _transactionFactory.Create();
-		var recipeDao = _recipeDaoFactory.Create(transaction);
-		var recipes = await recipeDao.SearchRecipes(rs);
-		transaction.Commit();
-		return recipes;
+		return _transactionExecuter.Execute(recipeDao =>
+		{
+			return recipeDao.SearchRecipes(rs);
+		});
 	}
 
 	private static async Task CheckIfCanModify(long recipeId, long userId, RecipeDao recipeDao)
